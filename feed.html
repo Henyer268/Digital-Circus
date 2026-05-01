@@ -4,20 +4,292 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MiRed — Feed</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f0f2f5; }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px;
+      background: #0f3460; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .navbar-logo { color: white; font-size: 1.4rem; font-weight: 700; }
+    .navbar-right { display: flex; align-items: center; gap: 12px; }
+    .navbar-user { color: white; font-size: 0.9rem; }
+    .btn-logout {
+      background: #e94560; color: white; border: none;
+      padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+    }
+    .btn-logout:hover { background: #c73652; }
+
+    /* LAYOUT */
+    .main-layout {
+      max-width: 900px; margin: 0 auto; padding: 72px 16px 24px;
+      display: grid; grid-template-columns: 260px 1fr; gap: 20px;
+    }
+
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: white; border-radius: 12px;
+      padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .profile-card { text-align: center; }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #0f3460; color: white; font-size: 1.8rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px; font-weight: 700;
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+    .profile-email { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .sidebar-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: #1a1a2e; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 8px; border-radius: 8px; cursor: pointer;
+      color: #444; font-size: 0.95rem; transition: background 0.2s;
+    }
+    .nav-item:hover { background: #f0f2f5; }
+    .nav-icon { font-size: 1.2rem; }
+
+    /* FEED */
+    .feed { display: flex; flex-direction: column; gap: 16px; }
+
+    /* CREAR PUBLICACION */
+    .create-post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .create-post-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .create-post-input {
+      flex: 1; background: #f0f2f5; border: none; border-radius: 20px;
+      padding: 10px 16px; font-size: 0.95rem; cursor: pointer; outline: none;
+      color: #888;
+    }
+    .create-post-input:focus { background: #e4e6eb; }
+    .create-post-actions { display: flex; gap: 8px; border-top: 1px solid #f0f2f5; padding-top: 12px; }
+    .action-btn {
+      flex: 1; padding: 8px; border: none; background: none;
+      border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+      color: #555; display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    .action-btn:hover { background: #f0f2f5; }
+
+    /* MODAL PUBLICAR */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: white; border-radius: 16px; padding: 24px;
+      width: 100%; max-width: 500px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-title { font-size: 1.1rem; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; }
+    .modal textarea {
+      width: 100%; border: 1.5px solid #ddd; border-radius: 10px;
+      padding: 12px; font-size: 0.95rem; resize: none; outline: none;
+      font-family: inherit; min-height: 120px;
+    }
+    .modal textarea:focus { border-color: #0f3460; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+    .btn-cancel { padding: 9px 18px; border: none; background: #f0f2f5; border-radius: 8px; cursor: pointer; }
+    .btn-post { padding: 9px 18px; border: none; background: #0f3460; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .btn-post:hover { background: #e94560; }
+
+    /* POSTS */
+    .post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .post-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: #0f3460; color: white; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; overflow: hidden; flex-shrink: 0;
+    }
+    .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .post-author { font-weight: 700; font-size: 0.95rem; }
+    .post-time { font-size: 0.78rem; color: #888; }
+    .post-content { font-size: 0.95rem; line-height: 1.5; color: #1a1a2e; margin-bottom: 12px; }
+    .post-actions { display: flex; gap: 8px; border-top: 1px solid #f0f2f5; padding-top: 10px; }
+    .post-btn {
+      flex: 1; padding: 8px; border: none; background: none;
+      border-radius: 8px; cursor: pointer; font-size: 0.88rem;
+      color: #555; display: flex; align-items: center; justify-content: center; gap: 5px;
+      transition: background 0.2s;
+    }
+    .post-btn:hover { background: #f0f2f5; }
+    .post-btn.liked { color: #e94560; }
+
+    .empty-feed { text-align: center; color: #888; padding: 40px; }
+  </style>
 </head>
 <body>
-  <h1>Bienvenido al Feed</h1>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-logo">🌐 MiRed</div>
+    <div class="navbar-right">
+      <span class="navbar-user" id="navbar-name">Cargando...</span>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <!-- LAYOUT -->
+  <div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="card profile-card">
+        <div class="avatar" id="sidebar-avatar">?</div>
+        <div class="profile-name" id="sidebar-name">Cargando...</div>
+        <div class="profile-email" id="sidebar-email"></div>
+      </div>
+      <div class="card">
+        <div class="sidebar-title">Menú</div>
+        <div class="nav-item"><span class="nav-icon">🏠</span> Inicio</div>
+        <div class="nav-item"><span class="nav-icon">👤</span> Mi perfil</div>
+        <div class="nav-item"><span class="nav-icon">👥</span> Amigos</div>
+        <div class="nav-item"><span class="nav-icon">💬</span> Mensajes</div>
+      </div>
+    </aside>
+
+    <!-- FEED -->
+    <main class="feed">
+
+      <!-- CREAR PUBLICACIÓN -->
+      <div class="create-post">
+        <div class="create-post-top">
+          <div class="avatar" id="post-avatar" style="width:42px;height:42px;font-size:1rem;">?</div>
+          <input class="create-post-input" placeholder="¿Qué estás pensando?" readonly onclick="openModal()" />
+        </div>
+        <div class="create-post-actions">
+          <button class="action-btn" onclick="openModal()">📷 Foto</button>
+          <button class="action-btn" onclick="openModal()">😊 Sentimiento</button>
+          <button class="action-btn" onclick="openModal()">📍 Lugar</button>
+        </div>
+      </div>
+
+      <!-- POSTS -->
+      <div id="posts-container">
+        <div class="empty-feed">No hay publicaciones aún. ¡Sé el primero en publicar!</div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL PUBLICAR -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Crear publicación</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <textarea id="post-text" placeholder="¿Qué estás pensando?"></textarea>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-post" onclick="submitPost()">Publicar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const _supabase = window.supabase.createClient(
       'https://xdhvztdhjotzjwwrwijx.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
     )
-    // Verificar sesión
-    _supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) window.location.href = 'index.html'
-    })
+
+    let currentUser = null
+    let currentProfile = null
+
+    async function init() {
+      const { data: { session } } = await _supabase.auth.getSession()
+      if (!session) return window.location.href = 'index.html'
+
+      currentUser = session.user
+      const { data: profile } = await _supabase
+        .from('profiles').select('*').eq('id', currentUser.id).single()
+
+      currentProfile = profile
+      const name = profile?.full_name || currentUser.email
+      const initial = name.charAt(0).toUpperCase()
+
+      document.getElementById('navbar-name').textContent = name
+      document.getElementById('sidebar-name').textContent = name
+      document.getElementById('sidebar-email').textContent = currentUser.email
+      document.getElementById('sidebar-avatar').textContent = initial
+      document.getElementById('post-avatar').textContent = initial
+
+      loadPosts()
+    }
+
+    async function loadPosts() {
+      const { data: posts } = await _supabase
+        .from('posts')
+        .select('*, profiles(full_name, avatar_url)')
+        .order('created_at', { ascending: false })
+
+      const container = document.getElementById('posts-container')
+
+      if (!posts || posts.length === 0) {
+        container.innerHTML = '<div class="empty-feed">No hay publicaciones aún. ¡Sé el primero en publicar!</div>'
+        return
+      }
+
+      container.innerHTML = posts.map(post => {
+        const name = post.profiles?.full_name || 'Usuario'
+        const initial = name.charAt(0).toUpperCase()
+        const time = new Date(post.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+        return `
+          <div class="post">
+            <div class="post-header">
+              <div class="post-avatar">${initial}</div>
+              <div>
+                <div class="post-author">${name}</div>
+                <div class="post-time">${time}</div>
+              </div>
+            </div>
+            <div class="post-content">${post.content}</div>
+            <div class="post-actions">
+              <button class="post-btn">❤️ Me gusta</button>
+              <button class="post-btn">💬 Comentar</button>
+              <button class="post-btn">↗️ Compartir</button>
+            </div>
+          </div>`
+      }).join('')
+    }
+
+    function openModal() { document.getElementById('modal-overlay').classList.add('active') }
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active')
+      document.getElementById('post-text').value = ''
+    }
+
+    async function submitPost() {
+      const content = document.getElementById('post-text').value.trim()
+      if (!content) return
+
+      const { error } = await _supabase.from('posts').insert({
+        user_id: currentUser.id,
+        content: content
+      })
+
+      if (error) { alert('Error al publicar: ' + error.message); return }
+      closeModal()
+      loadPosts()
+    }
+
+    async function logout() {
+      await _supabase.auth.signOut()
+      window.location.href = 'index.html'
+    }
+
+    init()
   </script>
 </body>
 </html>
