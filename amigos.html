@@ -26,6 +26,37 @@
     .notif-badge { position: absolute; top: -2px; right: -2px; background: #e94560; color: white; font-size: 0.68rem; font-weight: 700; border-radius: 50%; width: 18px; height: 18px; display: none; align-items: center; justify-content: center; border: 2px solid #0f3460; }
     .notif-badge.visible { display: flex; }
 
+    /* PANEL NOTIFICACIONES */
+    .notif-panel {
+      position: absolute; top: 48px; right: 0;
+      width: 340px; background: white; border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18); z-index: 200;
+      display: none; overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      padding: 14px 16px; font-weight: 700; font-size: 0.95rem;
+      border-bottom: 1px solid #f0f2f5; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .notif-mark-all { font-size: 0.8rem; color: #0f3460; cursor: pointer; font-weight: 600; border: none; background: none; }
+    .notif-mark-all:hover { color: #e94560; }
+    .notif-list { max-height: 380px; overflow-y: auto; }
+    .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #f8f8f8; cursor: pointer; transition: background 0.15s; }
+    .notif-item:hover { background: #f8f9ff; }
+    .notif-item.unread { background: #f0f4ff; }
+    .notif-item.unread:hover { background: #e8eeff; }
+    .notif-icon { width: 36px; height: 36px; border-radius: 50%; background: #0f3460; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .notif-icon.like { background: #e94560; }
+    .notif-icon.comment { background: #0f3460; }
+    .notif-icon.friend_request { background: #27ae60; }
+    .notif-text { flex: 1; }
+    .notif-text p { font-size: 0.85rem; color: #444; line-height: 1.4; }
+    .notif-text strong { font-weight: 700; color: #1a1a2e; }
+    .notif-time { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+    .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #0f3460; flex-shrink: 0; margin-top: 6px; }
+    .notif-empty { padding: 32px 16px; text-align: center; color: #aaa; font-size: 0.9rem; }
+
     .main-layout { max-width: 900px; margin: 0 auto; padding: 72px 16px 24px; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
     .sidebar { display: flex; flex-direction: column; gap: 12px; }
     .card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
@@ -39,10 +70,8 @@
     .nav-item:hover { background: #f0f2f5; }
     .nav-item.active { background: #e8eeff; color: #0f3460; font-weight: 600; }
 
-    /* CONTENIDO PRINCIPAL */
     .content { display: flex; flex-direction: column; gap: 16px; }
 
-    /* BUSCADOR */
     .search-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .search-title { font-weight: 700; font-size: 1rem; margin-bottom: 12px; color: #1a1a2e; }
     .search-row { display: flex; gap: 10px; }
@@ -52,14 +81,12 @@
     .btn-search:hover { background: #e94560; }
     .search-results { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
 
-    /* TABS */
     .tabs { display: flex; border-bottom: 2px solid #f0f2f5; margin-bottom: 4px; }
     .tab-btn { padding: 10px 18px; border: none; background: none; cursor: pointer; font-size: 0.92rem; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
     .tab-btn:hover { color: #0f3460; }
     .tab-btn.active { color: #0f3460; border-bottom-color: #0f3460; }
     .tab-count { background: #e94560; color: white; font-size: 0.72rem; border-radius: 10px; padding: 1px 6px; margin-left: 5px; }
 
-    /* USER CARD */
     .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; background: #fafafa; border: 1px solid #f0f2f5; transition: box-shadow 0.2s; }
     .user-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: #0f3460; color: white; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
@@ -81,7 +108,6 @@
     .empty-state { text-align: center; color: #aaa; padding: 32px 16px; font-size: 0.92rem; }
     .empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
 
-    /* TOAST */
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a2e; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; z-index: 999; transition: transform 0.3s ease; pointer-events: none; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast.success { background: #27ae60; }
@@ -95,8 +121,17 @@
     <div class="navbar-right">
       <span class="navbar-user" id="navbar-name">Cargando...</span>
       <div class="notif-bell-wrap">
-        <button class="notif-bell" onclick="window.location.href='feed.html'" title="Notificaciones">🔔</button>
+        <button class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">🔔</button>
         <div class="notif-badge" id="notif-badge">0</div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-panel-header">
+            <span>Notificaciones</span>
+            <button class="notif-mark-all" onclick="markAllRead()">Marcar todo como leído</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div class="notif-empty">Sin notificaciones aún</div>
+          </div>
+        </div>
       </div>
       <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
     </div>
@@ -120,7 +155,6 @@
 
     <main class="content">
 
-      <!-- BUSCADOR -->
       <div class="search-card">
         <div class="search-title">🔍 Buscar personas</div>
         <div class="search-row">
@@ -130,7 +164,6 @@
         <div class="search-results" id="search-results"></div>
       </div>
 
-      <!-- TABS: SOLICITUDES / MIS AMIGOS -->
       <div class="card">
         <div class="tabs">
           <button class="tab-btn active" id="tab-requests" onclick="switchTab('requests')">
@@ -164,7 +197,7 @@
 
     let currentUser = null
     let currentProfile = null
-    let myFriendships = [] // todas las filas donde yo soy parte
+    let myFriendships = []
 
     async function init() {
       const { data: { session } } = await _supabase.auth.getSession()
@@ -183,6 +216,14 @@
       else av.textContent = name.charAt(0).toUpperCase()
 
       await loadFriendships()
+      await loadNotifications()
+
+      document.addEventListener('click', (e) => {
+        const wrap = document.querySelector('.notif-bell-wrap')
+        if (wrap && !wrap.contains(e.target)) {
+          document.getElementById('notif-panel').classList.remove('open')
+        }
+      })
     }
 
     async function loadFriendships() {
@@ -193,9 +234,7 @@
 
       myFriendships = data || []
 
-      // Solicitudes recibidas pendientes
       const pending = myFriendships.filter(f => f.receiver_id === currentUser.id && f.status === 'pending')
-      // Amigos aceptados
       const accepted = myFriendships.filter(f => f.status === 'accepted')
 
       renderRequests(pending)
@@ -215,7 +254,6 @@
       countEl.textContent = pending.length
       countEl.style.display = 'inline'
 
-      // Cargar perfiles de quienes enviaron
       const ids = pending.map(f => f.requester_id)
       const { data: profiles } = await _supabase.from('profiles').select('*').in('id', ids)
       const pMap = {}
@@ -253,7 +291,6 @@
       countEl.textContent = accepted.length
       countEl.style.display = 'inline'
 
-      // El amigo puede ser requester o receiver
       const friendIds = accepted.map(f => f.requester_id === currentUser.id ? f.receiver_id : f.requester_id)
       const { data: profiles } = await _supabase.from('profiles').select('*').in('id', friendIds)
       const pMap = {}
@@ -278,7 +315,6 @@
       }).join('')
     }
 
-    // ─── BUSCADOR ─────────────────────────────────────────────────
     async function searchUsers() {
       const query = document.getElementById('search-input').value.trim()
       if (!query) return
@@ -302,15 +338,10 @@
         const rel = getRelationship(u.id)
         let actionHTML = ''
 
-        if (rel === 'friends') {
-          actionHTML = `<button class="btn-pending">✓ Amigos</button>`
-        } else if (rel === 'pending_sent') {
-          actionHTML = `<button class="btn-pending">⏳ Enviada</button>`
-        } else if (rel === 'pending_received') {
-          actionHTML = `<button class="btn-accept" onclick="acceptFromSearch('${u.id}')">✓ Aceptar</button>`
-        } else {
-          actionHTML = `<button class="btn-add" onclick="sendRequest('${u.id}', this)">➕ Agregar</button>`
-        }
+        if (rel === 'friends') actionHTML = `<button class="btn-pending">✓ Amigos</button>`
+        else if (rel === 'pending_sent') actionHTML = `<button class="btn-pending">⏳ Enviada</button>`
+        else if (rel === 'pending_received') actionHTML = `<button class="btn-accept" onclick="acceptFromSearch('${u.id}')">✓ Aceptar</button>`
+        else actionHTML = `<button class="btn-add" onclick="sendRequest('${u.id}', this)">➕ Agregar</button>`
 
         return `
           <div class="user-card">
@@ -347,7 +378,6 @@
       btn.className = 'btn-pending'
       btn.disabled = true
 
-      // Notificar al receptor
       await _supabase.from('notifications').insert({
         user_id: toUserId,
         from_user_id: currentUser.id,
@@ -386,6 +416,79 @@
       showToast('Amigo eliminado')
     }
 
+    // ─── NOTIFICACIONES ───────────────────────────────────────────
+    async function loadNotifications() {
+      const { data: notifs } = await _supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(30)
+
+      if (!notifs || notifs.length === 0) { updateBadge(0); return }
+
+      const fromIds = [...new Set(notifs.map(n => n.from_user_id).filter(Boolean))]
+      const { data: fromProfiles } = await _supabase.from('profiles').select('id, full_name').in('id', fromIds)
+      const fromMap = {}
+      fromProfiles?.forEach(p => fromMap[p.id] = p)
+
+      const unread = notifs.filter(n => !n.read).length
+      updateBadge(unread)
+
+      const list = document.getElementById('notif-list')
+      list.innerHTML = notifs.map(n => {
+        const from = fromMap[n.from_user_id]
+        const fromName = from?.full_name || 'Alguien'
+        let emoji = '🔔', action = 'interactuó contigo'
+        if (n.type === 'like') { emoji = '❤️'; action = 'le dio Me gusta a tu publicación' }
+        else if (n.type === 'comment') { emoji = '💬'; action = 'comentó tu publicación' }
+        else if (n.type === 'friend_request') { emoji = '👥'; action = 'te envió una solicitud de amistad' }
+        const time = timeAgo(n.created_at)
+        return `
+          <div class="notif-item ${n.read ? '' : 'unread'}" id="notif-${n.id}" onclick="markRead('${n.id}')">
+            <div class="notif-icon ${n.type}">${emoji}</div>
+            <div class="notif-text">
+              <p><strong>${fromName}</strong> ${action}</p>
+              <div class="notif-time">${time}</div>
+            </div>
+            ${!n.read ? '<div class="notif-dot"></div>' : ''}
+          </div>`
+      }).join('')
+    }
+
+    function updateBadge(count) {
+      const badge = document.getElementById('notif-badge')
+      if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.classList.add('visible') }
+      else badge.classList.remove('visible')
+    }
+
+    async function markRead(notifId) {
+      await _supabase.from('notifications').update({ read: true }).eq('id', notifId)
+      const el = document.getElementById(`notif-${notifId}`)
+      if (el) { el.classList.remove('unread'); el.querySelector('.notif-dot')?.remove() }
+      updateBadge(document.querySelectorAll('.notif-item.unread').length)
+    }
+
+    async function markAllRead() {
+      await _supabase.from('notifications').update({ read: true }).eq('user_id', currentUser.id).eq('read', false)
+      document.querySelectorAll('.notif-item').forEach(el => { el.classList.remove('unread'); el.querySelector('.notif-dot')?.remove() })
+      updateBadge(0)
+    }
+
+    function toggleNotifPanel() {
+      const panel = document.getElementById('notif-panel')
+      panel.classList.toggle('open')
+      if (panel.classList.contains('open')) loadNotifications()
+    }
+
+    function timeAgo(dateStr) {
+      const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+      if (diff < 60) return 'Hace un momento'
+      if (diff < 3600) return `Hace ${Math.floor(diff / 60)} min`
+      if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} h`
+      return `Hace ${Math.floor(diff / 86400)} días`
+    }
+
     // ─── TABS ─────────────────────────────────────────────────────
     function switchTab(tab) {
       document.getElementById('panel-requests').style.display = tab === 'requests' ? 'block' : 'none'
@@ -394,7 +497,6 @@
       document.getElementById('tab-friends').classList.toggle('active', tab === 'friends')
     }
 
-    // ─── TOAST ────────────────────────────────────────────────────
     let toastTimer = null
     function showToast(msg, type = '') {
       const t = document.getElementById('toast')
