@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiRed — Inicio</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <div class="auth-logo">
+      <h1>🌐 MiRed</h1>
+      <p>La red social de tu grupo</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <button class="tab-btn active" onclick="showTab('login')">Iniciar sesión</button>
+      <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login" class="auth-form">
+      <input type="email" id="login-email" placeholder="Correo electrónico" />
+      <input type="password" id="login-password" placeholder="Contraseña" />
+      <button class="btn-primary" onclick="login()">Entrar</button>
+    </div>
+
+    <!-- REGISTRO -->
+    <div id="register" class="auth-form hidden">
+      <input type="text" id="reg-name" placeholder="Tu nombre completo" />
+      <input type="email" id="reg-email" placeholder="Correo electrónico" />
+      <input type="password" id="reg-password" placeholder="Contraseña (mín. 6 caracteres)" />
+      <button class="btn-primary" onclick="register()">Crear cuenta</button>
+    </div>
+
+    <div id="auth-message" class="auth-message"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
