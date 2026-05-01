@@ -230,9 +230,9 @@
 
     async function loadPosts() {
       const { data: posts } = await _supabase
-        .from('posts')
-        .select('*, profiles(full_name, avatar_url)')
-        .order('created_at', { ascending: false })
+  .from('posts')
+  .select('*')
+  .order('created_at', { ascending: false })
 
       const container = document.getElementById('posts-container')
 
