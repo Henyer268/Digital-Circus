@@ -300,7 +300,7 @@
       <a href="feed.html"><span class="icon">🏠</span> Inicio</a>
       <a href="#"><span class="icon">📺</span> Videos</a>
       <a href="amigos.html"><span class="icon">👥</span> Amigos</a>
-      <a href="mensajes.html" class="active"><span class="icon">💬</span> Mensajes</a>
+      <a href="mensajes.html"><span class="icon">💬</span> Mensajes</a>
       <div class="sidebar-divider"></div>
       <a href="perfil.html"><span class="icon">👤</span> Mi Perfil</a>
       <a href="#"><span class="icon">🔖</span> Guardados</a>
@@ -338,7 +338,12 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const _supabase = window.supabase.createClient(
+  'https://xdhvztdhjotzjwwrwijx.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
+);
 const ME = { name: 'Tú', initials: 'TU', color: '#1877f2' };
 
 const conversations = [
@@ -611,8 +616,16 @@ document.addEventListener('click', e => {
   }
 });
 
+// Init — verificar sesión
+const { data: { session } } = await _supabase.auth.getSession();
+if (!session) { window.location.href = 'index.html'; return; }
 // Init
-renderConvList(conversations);
+async function init() {
+  const { data: { session } } = await _supabase.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  renderConvList(conversations);
+}
+init();
 </script>
 </body>
 </html>
