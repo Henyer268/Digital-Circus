@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiRed — Amigos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f0f2f5; }
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px;
+      background: #0f3460; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .navbar-logo { color: white; font-size: 1.4rem; font-weight: 700; cursor: pointer; }
+    .navbar-right { display: flex; align-items: center; gap: 12px; }
+    .navbar-user { color: white; font-size: 0.9rem; }
+    .btn-logout { background: #e94560; color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+    .btn-logout:hover { background: #c73652; }
+
+    /* CAMPANA */
+    .notif-bell-wrap { position: relative; }
+    .notif-bell { background: rgba(255,255,255,0.15); border: none; color: white; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .notif-bell:hover { background: rgba(255,255,255,0.25); }
+    .notif-badge { position: absolute; top: -2px; right: -2px; background: #e94560; color: white; font-size: 0.68rem; font-weight: 700; border-radius: 50%; width: 18px; height: 18px; display: none; align-items: center; justify-content: center; border: 2px solid #0f3460; }
+    .notif-badge.visible { display: flex; }
+
+    .main-layout { max-width: 900px; margin: 0 auto; padding: 72px 16px 24px; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+    .sidebar { display: flex; flex-direction: column; gap: 12px; }
+    .card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .profile-card { text-align: center; }
+    .s-avatar { width: 72px; height: 72px; border-radius: 50%; background: #0f3460; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: 700; overflow: hidden; }
+    .s-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+    .profile-email { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .sidebar-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: #1a1a2e; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; cursor: pointer; color: #444; font-size: 0.95rem; transition: background 0.2s; }
+    .nav-item:hover { background: #f0f2f5; }
+    .nav-item.active { background: #e8eeff; color: #0f3460; font-weight: 600; }
+
+    /* CONTENIDO PRINCIPAL */
+    .content { display: flex; flex-direction: column; gap: 16px; }
+
+    /* BUSCADOR */
+    .search-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .search-title { font-weight: 700; font-size: 1rem; margin-bottom: 12px; color: #1a1a2e; }
+    .search-row { display: flex; gap: 10px; }
+    .search-input { flex: 1; padding: 11px 16px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.95rem; outline: none; font-family: inherit; }
+    .search-input:focus { border-color: #0f3460; }
+    .btn-search { background: #0f3460; color: white; border: none; border-radius: 10px; padding: 11px 20px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    .btn-search:hover { background: #e94560; }
+    .search-results { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+    /* TABS */
+    .tabs { display: flex; border-bottom: 2px solid #f0f2f5; margin-bottom: 4px; }
+    .tab-btn { padding: 10px 18px; border: none; background: none; cursor: pointer; font-size: 0.92rem; font-weight: 600; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+    .tab-btn:hover { color: #0f3460; }
+    .tab-btn.active { color: #0f3460; border-bottom-color: #0f3460; }
+    .tab-count { background: #e94560; color: white; font-size: 0.72rem; border-radius: 10px; padding: 1px 6px; margin-left: 5px; }
+
+    /* USER CARD */
+    .user-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; background: #fafafa; border: 1px solid #f0f2f5; transition: box-shadow 0.2s; }
+    .user-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: #0f3460; color: white; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-info { flex: 1; }
+    .user-name { font-weight: 700; font-size: 0.95rem; color: #1a1a2e; }
+    .user-email { font-size: 0.8rem; color: #888; margin-top: 1px; }
+    .user-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-add { background: #0f3460; color: white; border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+    .btn-add:hover { background: #1a4a7a; }
+    .btn-accept { background: #27ae60; color: white; border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+    .btn-accept:hover { background: #219150; }
+    .btn-reject { background: #f0f2f5; color: #e94560; border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+    .btn-reject:hover { background: #ffe0e6; }
+    .btn-remove { background: #f0f2f5; color: #888; border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; }
+    .btn-remove:hover { background: #ffe0e6; color: #e94560; }
+    .btn-pending { background: #f0f2f5; color: #888; border: none; border-radius: 8px; padding: 8px 14px; font-size: 0.85rem; cursor: default; }
+
+    .empty-state { text-align: center; color: #aaa; padding: 32px 16px; font-size: 0.92rem; }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a2e; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; z-index: 999; transition: transform 0.3s ease; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: #27ae60; }
+    .toast.error { background: #e94560; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-logo" onclick="window.location.href='feed.html'">🌐 MiRed</div>
+    <div class="navbar-right">
+      <span class="navbar-user" id="navbar-name">Cargando...</span>
+      <div class="notif-bell-wrap">
+        <button class="notif-bell" onclick="window.location.href='feed.html'" title="Notificaciones">🔔</button>
+        <div class="notif-badge" id="notif-badge">0</div>
+      </div>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="card profile-card">
+        <div class="s-avatar" id="sidebar-avatar">?</div>
+        <div class="profile-name" id="sidebar-name">Cargando...</div>
+        <div class="profile-email" id="sidebar-email"></div>
+      </div>
+      <div class="card">
+        <div class="sidebar-title">Menú</div>
+        <div class="nav-item" onclick="window.location.href='feed.html'">🏠 Inicio</div>
+        <div class="nav-item" onclick="window.location.href='perfil.html'">👤 Mi perfil</div>
+        <div class="nav-item active">👥 Amigos</div>
+        <div class="nav-item">💬 Mensajes</div>
+      </div>
+    </aside>
+
+    <main class="content">
+
+      <!-- BUSCADOR -->
+      <div class="search-card">
+        <div class="search-title">🔍 Buscar personas</div>
+        <div class="search-row">
+          <input class="search-input" id="search-input" placeholder="Busca por nombre..." onkeydown="if(event.key==='Enter') searchUsers()" />
+          <button class="btn-search" onclick="searchUsers()">Buscar</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+      </div>
+
+      <!-- TABS: SOLICITUDES / MIS AMIGOS -->
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-requests" onclick="switchTab('requests')">
+            📩 Solicitudes <span class="tab-count" id="requests-count" style="display:none">0</span>
+          </button>
+          <button class="tab-btn" id="tab-friends" onclick="switchTab('friends')">
+            👥 Mis amigos <span class="tab-count" id="friends-count" style="display:none">0</span>
+          </button>
+        </div>
+
+        <div id="panel-requests" style="padding-top:14px;">
+          <div class="empty-state"><div class="empty-icon">📭</div>Sin solicitudes pendientes</div>
+        </div>
+
+        <div id="panel-friends" style="padding-top:14px; display:none;">
+          <div class="empty-state"><div class="empty-icon">👥</div>Aún no tienes amigos agregados</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const _supabase = window.supabase.createClient(
+      'https://xdhvztdhjotzjwwrwijx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
+    )
+
+    let currentUser = null
+    let currentProfile = null
+    let myFriendships = [] // todas las filas donde yo soy parte
+
+    async function init() {
+      const { data: { session } } = await _supabase.auth.getSession()
+      if (!session) return window.location.href = 'index.html'
+      currentUser = session.user
+
+      const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single()
+      currentProfile = profile
+      const name = profile?.full_name || currentUser.email
+      document.getElementById('navbar-name').textContent = name
+      document.getElementById('sidebar-name').textContent = name
+      document.getElementById('sidebar-email').textContent = currentUser.email
+
+      const av = document.getElementById('sidebar-avatar')
+      if (profile?.avatar_url) av.innerHTML = `<img src="${profile.avatar_url}" />`
+      else av.textContent = name.charAt(0).toUpperCase()
+
+      await loadFriendships()
+    }
+
+    async function loadFriendships() {
+      const { data } = await _supabase
+        .from('friendships')
+        .select('*')
+        .or(`requester_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+
+      myFriendships = data || []
+
+      // Solicitudes recibidas pendientes
+      const pending = myFriendships.filter(f => f.receiver_id === currentUser.id && f.status === 'pending')
+      // Amigos aceptados
+      const accepted = myFriendships.filter(f => f.status === 'accepted')
+
+      renderRequests(pending)
+      renderFriends(accepted)
+    }
+
+    async function renderRequests(pending) {
+      const panel = document.getElementById('panel-requests')
+      const countEl = document.getElementById('requests-count')
+
+      if (!pending.length) {
+        panel.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div>Sin solicitudes pendientes</div>'
+        countEl.style.display = 'none'
+        return
+      }
+
+      countEl.textContent = pending.length
+      countEl.style.display = 'inline'
+
+      // Cargar perfiles de quienes enviaron
+      const ids = pending.map(f => f.requester_id)
+      const { data: profiles } = await _supabase.from('profiles').select('*').in('id', ids)
+      const pMap = {}
+      profiles?.forEach(p => pMap[p.id] = p)
+
+      panel.innerHTML = pending.map(f => {
+        const p = pMap[f.requester_id]
+        const name = p?.full_name || 'Usuario'
+        const avatarHTML = p?.avatar_url ? `<img src="${p.avatar_url}" />` : name.charAt(0).toUpperCase()
+        return `
+          <div class="user-card" id="req-${f.id}">
+            <div class="user-avatar">${avatarHTML}</div>
+            <div class="user-info">
+              <div class="user-name">${name}</div>
+              <div class="user-email">Quiere ser tu amigo</div>
+            </div>
+            <div class="user-actions">
+              <button class="btn-accept" onclick="acceptRequest('${f.id}')">✓ Aceptar</button>
+              <button class="btn-reject" onclick="rejectRequest('${f.id}')">✕</button>
+            </div>
+          </div>`
+      }).join('')
+    }
+
+    async function renderFriends(accepted) {
+      const panel = document.getElementById('panel-friends')
+      const countEl = document.getElementById('friends-count')
+
+      if (!accepted.length) {
+        panel.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div>Aún no tienes amigos agregados</div>'
+        countEl.style.display = 'none'
+        return
+      }
+
+      countEl.textContent = accepted.length
+      countEl.style.display = 'inline'
+
+      // El amigo puede ser requester o receiver
+      const friendIds = accepted.map(f => f.requester_id === currentUser.id ? f.receiver_id : f.requester_id)
+      const { data: profiles } = await _supabase.from('profiles').select('*').in('id', friendIds)
+      const pMap = {}
+      profiles?.forEach(p => pMap[p.id] = p)
+
+      panel.innerHTML = accepted.map(f => {
+        const friendId = f.requester_id === currentUser.id ? f.receiver_id : f.requester_id
+        const p = pMap[friendId]
+        const name = p?.full_name || 'Usuario'
+        const avatarHTML = p?.avatar_url ? `<img src="${p.avatar_url}" />` : name.charAt(0).toUpperCase()
+        return `
+          <div class="user-card" id="friend-${f.id}">
+            <div class="user-avatar">${avatarHTML}</div>
+            <div class="user-info">
+              <div class="user-name">${name}</div>
+              <div class="user-email">Amigo</div>
+            </div>
+            <div class="user-actions">
+              <button class="btn-remove" onclick="removeFriend('${f.id}')">Eliminar</button>
+            </div>
+          </div>`
+      }).join('')
+    }
+
+    // ─── BUSCADOR ─────────────────────────────────────────────────
+    async function searchUsers() {
+      const query = document.getElementById('search-input').value.trim()
+      if (!query) return
+
+      const { data: users } = await _supabase
+        .from('profiles')
+        .select('*')
+        .ilike('full_name', `%${query}%`)
+        .neq('id', currentUser.id)
+        .limit(10)
+
+      const container = document.getElementById('search-results')
+
+      if (!users || users.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="padding:16px">No se encontraron usuarios</div>'
+        return
+      }
+
+      container.innerHTML = users.map(u => {
+        const avatarHTML = u.avatar_url ? `<img src="${u.avatar_url}" />` : u.full_name.charAt(0).toUpperCase()
+        const rel = getRelationship(u.id)
+        let actionHTML = ''
+
+        if (rel === 'friends') {
+          actionHTML = `<button class="btn-pending">✓ Amigos</button>`
+        } else if (rel === 'pending_sent') {
+          actionHTML = `<button class="btn-pending">⏳ Enviada</button>`
+        } else if (rel === 'pending_received') {
+          actionHTML = `<button class="btn-accept" onclick="acceptFromSearch('${u.id}')">✓ Aceptar</button>`
+        } else {
+          actionHTML = `<button class="btn-add" onclick="sendRequest('${u.id}', this)">➕ Agregar</button>`
+        }
+
+        return `
+          <div class="user-card">
+            <div class="user-avatar">${avatarHTML}</div>
+            <div class="user-info">
+              <div class="user-name">${u.full_name}</div>
+              <div class="user-email">${u.email || ''}</div>
+            </div>
+            <div class="user-actions">${actionHTML}</div>
+          </div>`
+      }).join('')
+    }
+
+    function getRelationship(userId) {
+      const f = myFriendships.find(f =>
+        (f.requester_id === currentUser.id && f.receiver_id === userId) ||
+        (f.requester_id === userId && f.receiver_id === currentUser.id)
+      )
+      if (!f) return 'none'
+      if (f.status === 'accepted') return 'friends'
+      if (f.status === 'pending' && f.requester_id === currentUser.id) return 'pending_sent'
+      if (f.status === 'pending' && f.receiver_id === currentUser.id) return 'pending_received'
+      return 'none'
+    }
+
+    async function sendRequest(toUserId, btn) {
+      const { error } = await _supabase.from('friendships').insert({
+        requester_id: currentUser.id,
+        receiver_id: toUserId,
+        status: 'pending'
+      })
+      if (error) { showToast('Error enviando solicitud', 'error'); return }
+      btn.textContent = '⏳ Enviada'
+      btn.className = 'btn-pending'
+      btn.disabled = true
+
+      // Notificar al receptor
+      await _supabase.from('notifications').insert({
+        user_id: toUserId,
+        from_user_id: currentUser.id,
+        type: 'friend_request',
+        read: false
+      })
+
+      await loadFriendships()
+      showToast('¡Solicitud enviada!', 'success')
+    }
+
+    async function acceptRequest(friendshipId) {
+      await _supabase.from('friendships').update({ status: 'accepted' }).eq('id', friendshipId)
+      document.getElementById(`req-${friendshipId}`)?.remove()
+      await loadFriendships()
+      showToast('¡Ahora son amigos!', 'success')
+    }
+
+    async function acceptFromSearch(fromUserId) {
+      const f = myFriendships.find(f => f.requester_id === fromUserId && f.receiver_id === currentUser.id)
+      if (f) await acceptRequest(f.id)
+    }
+
+    async function rejectRequest(friendshipId) {
+      await _supabase.from('friendships').delete().eq('id', friendshipId)
+      document.getElementById(`req-${friendshipId}`)?.remove()
+      await loadFriendships()
+      showToast('Solicitud rechazada')
+    }
+
+    async function removeFriend(friendshipId) {
+      if (!confirm('¿Eliminar este amigo?')) return
+      await _supabase.from('friendships').delete().eq('id', friendshipId)
+      document.getElementById(`friend-${friendshipId}`)?.remove()
+      await loadFriendships()
+      showToast('Amigo eliminado')
+    }
+
+    // ─── TABS ─────────────────────────────────────────────────────
+    function switchTab(tab) {
+      document.getElementById('panel-requests').style.display = tab === 'requests' ? 'block' : 'none'
+      document.getElementById('panel-friends').style.display = tab === 'friends' ? 'block' : 'none'
+      document.getElementById('tab-requests').classList.toggle('active', tab === 'requests')
+      document.getElementById('tab-friends').classList.toggle('active', tab === 'friends')
+    }
+
+    // ─── TOAST ────────────────────────────────────────────────────
+    let toastTimer = null
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast')
+      t.textContent = msg
+      t.className = 'toast ' + type
+      void t.offsetWidth
+      t.classList.add('show')
+      clearTimeout(toastTimer)
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
+    }
+
+    async function logout() {
+      await _supabase.auth.signOut()
+      window.location.href = 'index.html'
+    }
+
+    init()
+  </script>
+</body>
+</html>
