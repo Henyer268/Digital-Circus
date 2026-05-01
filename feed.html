@@ -7,8 +7,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body { background: #f0f2f5; }
-
-    /* NAVBAR */
     .navbar {
       position: fixed; top: 0; left: 0; right: 0; height: 56px;
       background: #0f3460; display: flex; align-items: center;
@@ -18,119 +16,68 @@
     .navbar-logo { color: white; font-size: 1.4rem; font-weight: 700; }
     .navbar-right { display: flex; align-items: center; gap: 12px; }
     .navbar-user { color: white; font-size: 0.9rem; }
-    .btn-logout {
-      background: #e94560; color: white; border: none;
-      padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
-    }
+    .btn-logout { background: #e94560; color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
     .btn-logout:hover { background: #c73652; }
-
-    /* LAYOUT */
-    .main-layout {
-      max-width: 900px; margin: 0 auto; padding: 72px 16px 24px;
-      display: grid; grid-template-columns: 260px 1fr; gap: 20px;
-    }
-
-    /* SIDEBAR */
+    .main-layout { max-width: 900px; margin: 0 auto; padding: 72px 16px 24px; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
     .sidebar { display: flex; flex-direction: column; gap: 12px; }
-    .card {
-      background: white; border-radius: 12px;
-      padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
+    .card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .profile-card { text-align: center; }
-    .avatar {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: #0f3460; color: white; font-size: 1.8rem;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 10px; font-weight: 700;
-      overflow: hidden;
-    }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: #0f3460; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: 700; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
     .profile-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
     .profile-email { font-size: 0.8rem; color: #888; margin-top: 2px; }
     .sidebar-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: #1a1a2e; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 8px; border-radius: 8px; cursor: pointer;
-      color: #444; font-size: 0.95rem; transition: background 0.2s;
-    }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; cursor: pointer; color: #444; font-size: 0.95rem; transition: background 0.2s; }
     .nav-item:hover { background: #f0f2f5; }
-    .nav-icon { font-size: 1.2rem; }
-
-    /* FEED */
     .feed { display: flex; flex-direction: column; gap: 16px; }
-
-    /* CREAR PUBLICACION */
     .create-post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .create-post-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .create-post-input {
-      flex: 1; background: #f0f2f5; border: none; border-radius: 20px;
-      padding: 10px 16px; font-size: 0.95rem; cursor: pointer; outline: none;
-      color: #888;
-    }
-    .create-post-input:focus { background: #e4e6eb; }
+    .create-post-input { flex: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 10px 16px; font-size: 0.95rem; cursor: pointer; outline: none; color: #888; }
     .create-post-actions { display: flex; gap: 8px; border-top: 1px solid #f0f2f5; padding-top: 12px; }
-    .action-btn {
-      flex: 1; padding: 8px; border: none; background: none;
-      border-radius: 8px; cursor: pointer; font-size: 0.9rem;
-      color: #555; display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: background 0.2s;
-    }
+    .action-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: #555; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
     .action-btn:hover { background: #f0f2f5; }
-
-    /* MODAL PUBLICAR */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5); z-index: 200;
-      align-items: center; justify-content: center;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
     .modal-overlay.active { display: flex; }
-    .modal {
-      background: white; border-radius: 16px; padding: 24px;
-      width: 100%; max-width: 500px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    }
+    .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 500px; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .modal-title { font-size: 1.1rem; font-weight: 700; }
     .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; }
-    .modal textarea {
-      width: 100%; border: 1.5px solid #ddd; border-radius: 10px;
-      padding: 12px; font-size: 0.95rem; resize: none; outline: none;
-      font-family: inherit; min-height: 120px;
-    }
+    .modal textarea { width: 100%; border: 1.5px solid #ddd; border-radius: 10px; padding: 12px; font-size: 0.95rem; resize: none; outline: none; font-family: inherit; min-height: 120px; }
     .modal textarea:focus { border-color: #0f3460; }
     .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
     .btn-cancel { padding: 9px 18px; border: none; background: #f0f2f5; border-radius: 8px; cursor: pointer; }
     .btn-post { padding: 9px 18px; border: none; background: #0f3460; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
     .btn-post:hover { background: #e94560; }
-
-    /* POSTS */
     .post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .post-avatar {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: #0f3460; color: white; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; overflow: hidden; flex-shrink: 0;
-    }
+    .post-avatar { width: 42px; height: 42px; border-radius: 50%; background: #0f3460; color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden; flex-shrink: 0; }
     .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .post-author { font-weight: 700; font-size: 0.95rem; }
     .post-time { font-size: 0.78rem; color: #888; }
     .post-content { font-size: 0.95rem; line-height: 1.5; color: #1a1a2e; margin-bottom: 12px; }
-    .post-actions { display: flex; gap: 8px; border-top: 1px solid #f0f2f5; padding-top: 10px; }
-    .post-btn {
-      flex: 1; padding: 8px; border: none; background: none;
-      border-radius: 8px; cursor: pointer; font-size: 0.88rem;
-      color: #555; display: flex; align-items: center; justify-content: center; gap: 5px;
-      transition: background 0.2s;
-    }
+    .post-stats { display: flex; gap: 16px; font-size: 0.82rem; color: #888; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f0f2f5; }
+    .post-actions { display: flex; gap: 8px; }
+    .post-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: 0.88rem; color: #555; display: flex; align-items: center; justify-content: center; gap: 5px; transition: background 0.2s; }
     .post-btn:hover { background: #f0f2f5; }
-    .post-btn.liked { color: #e94560; }
+    .post-btn.liked { color: #e94560; font-weight: 600; }
 
+    /* COMENTARIOS */
+    .comments-section { margin-top: 12px; border-top: 1px solid #f0f2f5; padding-top: 12px; display: none; }
+    .comments-section.open { display: block; }
+    .comment { display: flex; gap: 8px; margin-bottom: 10px; }
+    .comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: #0f3460; color: white; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .comment-bubble { background: #f0f2f5; border-radius: 12px; padding: 8px 12px; flex: 1; }
+    .comment-author { font-weight: 700; font-size: 0.82rem; }
+    .comment-text { font-size: 0.88rem; color: #333; margin-top: 2px; }
+    .comment-input-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+    .comment-input { flex: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 9px 14px; font-size: 0.88rem; outline: none; font-family: inherit; }
+    .comment-submit { background: #0f3460; color: white; border: none; border-radius: 20px; padding: 9px 16px; cursor: pointer; font-size: 0.85rem; }
+    .comment-submit:hover { background: #e94560; }
     .empty-feed { text-align: center; color: #888; padding: 40px; }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="navbar-logo">🌐 MiRed</div>
     <div class="navbar-right">
@@ -139,10 +86,7 @@
     </div>
   </nav>
 
-  <!-- LAYOUT -->
   <div class="main-layout">
-
-    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="card profile-card">
         <div class="avatar" id="sidebar-avatar">?</div>
@@ -151,17 +95,14 @@
       </div>
       <div class="card">
         <div class="sidebar-title">Menú</div>
-        <div class="nav-item"><span class="nav-icon">🏠</span> Inicio</div>
-        <div class="nav-item"><span class="nav-icon">👤</span> Mi perfil</div>
-        <div class="nav-item"><span class="nav-icon">👥</span> Amigos</div>
-        <div class="nav-item"><span class="nav-icon">💬</span> Mensajes</div>
+        <div class="nav-item">🏠 Inicio</div>
+        <div class="nav-item">👤 Mi perfil</div>
+        <div class="nav-item">👥 Amigos</div>
+        <div class="nav-item">💬 Mensajes</div>
       </div>
     </aside>
 
-    <!-- FEED -->
     <main class="feed">
-
-      <!-- CREAR PUBLICACIÓN -->
       <div class="create-post">
         <div class="create-post-top">
           <div class="avatar" id="post-avatar" style="width:42px;height:42px;font-size:1rem;">?</div>
@@ -173,16 +114,12 @@
           <button class="action-btn" onclick="openModal()">📍 Lugar</button>
         </div>
       </div>
-
-      <!-- POSTS -->
       <div id="posts-container">
-        <div class="empty-feed">No hay publicaciones aún. ¡Sé el primero en publicar!</div>
+        <div class="empty-feed">Cargando publicaciones...</div>
       </div>
-
     </main>
   </div>
 
-  <!-- MODAL PUBLICAR -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-header">
@@ -210,8 +147,8 @@
     async function init() {
       const { data: { session } } = await _supabase.auth.getSession()
       if (!session) return window.location.href = 'index.html'
-
       currentUser = session.user
+
       const { data: profile } = await _supabase
         .from('profiles').select('*').eq('id', currentUser.id).single()
 
@@ -230,23 +167,47 @@
 
     async function loadPosts() {
       const { data: posts } = await _supabase
-  .from('posts')
-  .select('*')
-  .order('created_at', { ascending: false })
+        .from('posts').select('*').order('created_at', { ascending: false })
+
+      const { data: allLikes } = await _supabase.from('likes').select('*')
+      const { data: allComments } = await _supabase.from('comments').select('*')
 
       const container = document.getElementById('posts-container')
-
       if (!posts || posts.length === 0) {
         container.innerHTML = '<div class="empty-feed">No hay publicaciones aún. ¡Sé el primero en publicar!</div>'
         return
       }
 
+      // Cargar perfiles de los autores
+      const userIds = [...new Set(posts.map(p => p.user_id))]
+      const { data: profiles } = await _supabase.from('profiles').select('*').in('id', userIds)
+      const profileMap = {}
+      profiles?.forEach(p => profileMap[p.id] = p)
+
       container.innerHTML = posts.map(post => {
-        const name = currentProfile?.full_name || 'Usuario'
+        const profile = profileMap[post.user_id]
+        const name = profile?.full_name || 'Usuario'
         const initial = name.charAt(0).toUpperCase()
         const time = new Date(post.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+        const postLikes = allLikes?.filter(l => l.post_id === post.id) || []
+        const postComments = allComments?.filter(c => c.post_id === post.id) || []
+        const userLiked = postLikes.some(l => l.user_id === currentUser.id)
+
+        const commentsHTML = postComments.map(c => {
+          const cp = profileMap[c.user_id]
+          const cn = cp?.full_name || 'Usuario'
+          return `
+            <div class="comment">
+              <div class="comment-avatar">${cn.charAt(0).toUpperCase()}</div>
+              <div class="comment-bubble">
+                <div class="comment-author">${cn}</div>
+                <div class="comment-text">${c.content}</div>
+              </div>
+            </div>`
+        }).join('')
+
         return `
-          <div class="post">
+          <div class="post" id="post-${post.id}">
             <div class="post-header">
               <div class="post-avatar">${initial}</div>
               <div>
@@ -255,13 +216,69 @@
               </div>
             </div>
             <div class="post-content">${post.content}</div>
+            <div class="post-stats">
+              <span id="like-count-${post.id}">${postLikes.length} Me gusta</span>
+              <span>${postComments.length} comentarios</span>
+            </div>
             <div class="post-actions">
-              <button class="post-btn">❤️ Me gusta</button>
-              <button class="post-btn">💬 Comentar</button>
+              <button class="post-btn ${userLiked ? 'liked' : ''}" id="like-btn-${post.id}" onclick="toggleLike('${post.id}')">
+                ❤️ Me gusta
+              </button>
+              <button class="post-btn" onclick="toggleComments('${post.id}')">💬 Comentar</button>
               <button class="post-btn">↗️ Compartir</button>
+            </div>
+            <div class="comments-section" id="comments-${post.id}">
+              <div id="comments-list-${post.id}">${commentsHTML}</div>
+              <div class="comment-input-row">
+                <div class="comment-avatar">${initial}</div>
+                <input class="comment-input" id="comment-input-${post.id}" placeholder="Escribe un comentario..." />
+                <button class="comment-submit" onclick="submitComment('${post.id}')">Enviar</button>
+              </div>
             </div>
           </div>`
       }).join('')
+    }
+
+    async function toggleLike(postId) {
+      const { data: existing } = await _supabase
+        .from('likes').select('*').eq('user_id', currentUser.id).eq('post_id', postId).single()
+
+      if (existing) {
+        await _supabase.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId)
+        document.getElementById(`like-btn-${postId}`).classList.remove('liked')
+      } else {
+        await _supabase.from('likes').insert({ user_id: currentUser.id, post_id: postId })
+        document.getElementById(`like-btn-${postId}`).classList.add('liked')
+      }
+
+      const { data: likes } = await _supabase.from('likes').select('*').eq('post_id', postId)
+      document.getElementById(`like-count-${postId}`).textContent = `${likes.length} Me gusta`
+    }
+
+    function toggleComments(postId) {
+      const section = document.getElementById(`comments-${postId}`)
+      section.classList.toggle('open')
+    }
+
+    async function submitComment(postId) {
+      const input = document.getElementById(`comment-input-${postId}`)
+      const content = input.value.trim()
+      if (!content) return
+
+      await _supabase.from('comments').insert({ user_id: currentUser.id, post_id: postId, content })
+      input.value = ''
+
+      const name = currentProfile?.full_name || 'Usuario'
+      const initial = name.charAt(0).toUpperCase()
+      const commentHTML = `
+        <div class="comment">
+          <div class="comment-avatar">${initial}</div>
+          <div class="comment-bubble">
+            <div class="comment-author">${name}</div>
+            <div class="comment-text">${content}</div>
+          </div>
+        </div>`
+      document.getElementById(`comments-list-${postId}`).insertAdjacentHTML('beforeend', commentHTML)
     }
 
     function openModal() { document.getElementById('modal-overlay').classList.add('active') }
@@ -273,13 +290,8 @@
     async function submitPost() {
       const content = document.getElementById('post-text').value.trim()
       if (!content) return
-
-      const { error } = await _supabase.from('posts').insert({
-        user_id: currentUser.id,
-        content: content
-      })
-
-      if (error) { alert('Error al publicar: ' + error.message); return }
+      const { error } = await _supabase.from('posts').insert({ user_id: currentUser.id, content })
+      if (error) { alert('Error: ' + error.message); return }
       closeModal()
       loadPosts()
     }
