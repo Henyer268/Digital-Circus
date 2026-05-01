@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MiRed — Inicio</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="auth-page">
 
@@ -14,20 +14,17 @@
       <p>La red social de tu grupo</p>
     </div>
 
-    <!-- TABS -->
     <div class="auth-tabs">
       <button class="tab-btn active" onclick="showTab('login')">Iniciar sesión</button>
       <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
     </div>
 
-    <!-- LOGIN -->
     <div id="login" class="auth-form">
       <input type="email" id="login-email" placeholder="Correo electrónico" />
       <input type="password" id="login-password" placeholder="Contraseña" />
       <button class="btn-primary" onclick="login()">Entrar</button>
     </div>
 
-    <!-- REGISTRO -->
     <div id="register" class="auth-form hidden">
       <input type="text" id="reg-name" placeholder="Tu nombre completo" />
       <input type="email" id="reg-email" placeholder="Correo electrónico" />
@@ -39,6 +36,12 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/auth.js"></script>
+  <script>
+    const _supabase = window.supabase.createClient(
+      'https://xdhvztdhjotzjwwrwijx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
+    )
+  </script>
+  <script src="auth.js"></script>
 </body>
 </html>
