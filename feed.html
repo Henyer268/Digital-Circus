@@ -18,6 +18,70 @@
     .navbar-user { color: white; font-size: 0.9rem; }
     .btn-logout { background: #e94560; color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
     .btn-logout:hover { background: #c73652; }
+
+    /* CAMPANA */
+    .notif-bell-wrap { position: relative; }
+    .notif-bell {
+      background: rgba(255,255,255,0.15); border: none; color: white;
+      width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
+      font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .notif-bell:hover { background: rgba(255,255,255,0.25); }
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: #e94560; color: white; font-size: 0.68rem;
+      font-weight: 700; border-radius: 50%; width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #0f3460; display: none;
+    }
+    .notif-badge.visible { display: flex; }
+
+    /* PANEL NOTIFICACIONES */
+    .notif-panel {
+      position: absolute; top: 48px; right: 0;
+      width: 340px; background: white; border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18); z-index: 200;
+      display: none; overflow: hidden;
+    }
+    .notif-panel.open { display: block; }
+    .notif-panel-header {
+      padding: 14px 16px; font-weight: 700; font-size: 0.95rem;
+      border-bottom: 1px solid #f0f2f5; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .notif-mark-all {
+      font-size: 0.8rem; color: #0f3460; cursor: pointer;
+      font-weight: 600; border: none; background: none;
+    }
+    .notif-mark-all:hover { color: #e94560; }
+    .notif-list { max-height: 380px; overflow-y: auto; }
+    .notif-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px; border-bottom: 1px solid #f8f8f8;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .notif-item:hover { background: #f8f9ff; }
+    .notif-item.unread { background: #f0f4ff; }
+    .notif-item.unread:hover { background: #e8eeff; }
+    .notif-icon {
+      width: 36px; height: 36px; border-radius: 50%; background: #0f3460;
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+    }
+    .notif-icon.like { background: #e94560; font-size: 1rem; }
+    .notif-icon.comment { background: #0f3460; font-size: 1rem; }
+    .notif-text { flex: 1; }
+    .notif-text strong { font-weight: 700; color: #1a1a2e; }
+    .notif-text p { font-size: 0.85rem; color: #444; margin-top: 1px; line-height: 1.4; }
+    .notif-time { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+    .notif-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #0f3460;
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .notif-empty { padding: 32px 16px; text-align: center; color: #aaa; font-size: 0.9rem; }
+
+    /* LAYOUT */
     .main-layout { max-width: 900px; margin: 0 auto; padding: 72px 16px 24px; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
     .sidebar { display: flex; flex-direction: column; gap: 12px; }
     .card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
@@ -60,8 +124,6 @@
     .post-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: 0.88rem; color: #555; display: flex; align-items: center; justify-content: center; gap: 5px; transition: background 0.2s; }
     .post-btn:hover { background: #f0f2f5; }
     .post-btn.liked { color: #e94560; font-weight: 600; }
-
-    /* COMENTARIOS */
     .comments-section { margin-top: 12px; border-top: 1px solid #f0f2f5; padding-top: 12px; display: none; }
     .comments-section.open { display: block; }
     .comment { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -82,6 +144,22 @@
     <div class="navbar-logo">🌐 MiRed</div>
     <div class="navbar-right">
       <span class="navbar-user" id="navbar-name">Cargando...</span>
+
+      <!-- CAMPANITA -->
+      <div class="notif-bell-wrap">
+        <button class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">🔔</button>
+        <div class="notif-badge" id="notif-badge">0</div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-panel-header">
+            <span>Notificaciones</span>
+            <button class="notif-mark-all" onclick="markAllRead()">Marcar todo como leído</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div class="notif-empty">Sin notificaciones aún</div>
+          </div>
+        </div>
+      </div>
+
       <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
     </div>
   </nav>
@@ -96,9 +174,9 @@
       <div class="card">
         <div class="sidebar-title">Menú</div>
         <div class="nav-item" onclick="window.location.href='feed.html'">🏠 Inicio</div>
-<div class="nav-item" onclick="window.location.href='perfil.html'">👤 Mi perfil</div>
-<div class="nav-item">👥 Amigos</div>
-<div class="nav-item">💬 Mensajes</div>
+        <div class="nav-item" onclick="window.location.href='perfil.html'">👤 Mi perfil</div>
+        <div class="nav-item">👥 Amigos</div>
+        <div class="nav-item">💬 Mensajes</div>
       </div>
     </aside>
 
@@ -143,6 +221,7 @@
 
     let currentUser = null
     let currentProfile = null
+    let postsOwnerMap = {} // post_id -> user_id del dueño
 
     async function init() {
       const { data: { session } } = await _supabase.auth.getSession()
@@ -159,12 +238,28 @@
       document.getElementById('navbar-name').textContent = name
       document.getElementById('sidebar-name').textContent = name
       document.getElementById('sidebar-email').textContent = currentUser.email
-      document.getElementById('sidebar-avatar').textContent = initial
-      document.getElementById('post-avatar').textContent = initial
+
+      if (profile?.avatar_url) {
+        document.getElementById('sidebar-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar" />`
+        document.getElementById('post-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar" />`
+      } else {
+        document.getElementById('sidebar-avatar').textContent = initial
+        document.getElementById('post-avatar').textContent = initial
+      }
 
       loadPosts()
+      loadNotifications()
+
+      // Cerrar panel al hacer clic fuera
+      document.addEventListener('click', (e) => {
+        const wrap = document.querySelector('.notif-bell-wrap')
+        if (!wrap.contains(e.target)) {
+          document.getElementById('notif-panel').classList.remove('open')
+        }
+      })
     }
 
+    // ─── POSTS ────────────────────────────────────────────────────
     async function loadPosts() {
       const { data: posts } = await _supabase
         .from('posts').select('*').order('created_at', { ascending: false })
@@ -178,11 +273,13 @@
         return
       }
 
-      // Cargar perfiles de los autores
       const userIds = [...new Set(posts.map(p => p.user_id))]
       const { data: profiles } = await _supabase.from('profiles').select('*').in('id', userIds)
       const profileMap = {}
       profiles?.forEach(p => profileMap[p.id] = p)
+
+      // Guardar mapa de dueños de posts para notificaciones
+      posts.forEach(p => { postsOwnerMap[p.id] = p.user_id })
 
       container.innerHTML = posts.map(post => {
         const profile = profileMap[post.user_id]
@@ -192,6 +289,10 @@
         const postLikes = allLikes?.filter(l => l.post_id === post.id) || []
         const postComments = allComments?.filter(c => c.post_id === post.id) || []
         const userLiked = postLikes.some(l => l.user_id === currentUser.id)
+
+        const avatarHTML = profile?.avatar_url
+          ? `<img src="${profile.avatar_url}" alt="${name}" />`
+          : initial
 
         const commentsHTML = postComments.map(c => {
           const cp = profileMap[c.user_id]
@@ -209,7 +310,7 @@
         return `
           <div class="post" id="post-${post.id}">
             <div class="post-header">
-              <div class="post-avatar">${initial}</div>
+              <div class="post-avatar">${avatarHTML}</div>
               <div>
                 <div class="post-author">${name}</div>
                 <div class="post-time">${time}</div>
@@ -221,7 +322,7 @@
               <span>${postComments.length} comentarios</span>
             </div>
             <div class="post-actions">
-              <button class="post-btn ${userLiked ? 'liked' : ''}" id="like-btn-${post.id}" onclick="toggleLike('${post.id}')">
+              <button class="post-btn ${userLiked ? 'liked' : ''}" id="like-btn-${post.id}" onclick="toggleLike('${post.id}', '${post.user_id}')">
                 ❤️ Me gusta
               </button>
               <button class="post-btn" onclick="toggleComments('${post.id}')">💬 Comentar</button>
@@ -230,16 +331,17 @@
             <div class="comments-section" id="comments-${post.id}">
               <div id="comments-list-${post.id}">${commentsHTML}</div>
               <div class="comment-input-row">
-                <div class="comment-avatar">${initial}</div>
+                <div class="comment-avatar">${(currentProfile?.full_name || currentUser.email).charAt(0).toUpperCase()}</div>
                 <input class="comment-input" id="comment-input-${post.id}" placeholder="Escribe un comentario..." />
-                <button class="comment-submit" onclick="submitComment('${post.id}')">Enviar</button>
+                <button class="comment-submit" onclick="submitComment('${post.id}', '${post.user_id}')">Enviar</button>
               </div>
             </div>
           </div>`
       }).join('')
     }
 
-    async function toggleLike(postId) {
+    // ─── LIKES ────────────────────────────────────────────────────
+    async function toggleLike(postId, postOwnerId) {
       const { data: existing } = await _supabase
         .from('likes').select('*').eq('user_id', currentUser.id).eq('post_id', postId).single()
 
@@ -249,6 +351,11 @@
       } else {
         await _supabase.from('likes').insert({ user_id: currentUser.id, post_id: postId })
         document.getElementById(`like-btn-${postId}`).classList.add('liked')
+
+        // Notificar solo si el dueño del post NO es quien da like
+        if (postOwnerId && postOwnerId !== currentUser.id) {
+          await createNotification('like', postOwnerId, postId)
+        }
       }
 
       const { data: likes } = await _supabase.from('likes').select('*').eq('post_id', postId)
@@ -256,11 +363,11 @@
     }
 
     function toggleComments(postId) {
-      const section = document.getElementById(`comments-${postId}`)
-      section.classList.toggle('open')
+      document.getElementById(`comments-${postId}`).classList.toggle('open')
     }
 
-    async function submitComment(postId) {
+    // ─── COMENTARIOS ──────────────────────────────────────────────
+    async function submitComment(postId, postOwnerId) {
       const input = document.getElementById(`comment-input-${postId}`)
       const content = input.value.trim()
       if (!content) return
@@ -279,8 +386,123 @@
           </div>
         </div>`
       document.getElementById(`comments-list-${postId}`).insertAdjacentHTML('beforeend', commentHTML)
+
+      // Notificar solo si el dueño del post NO es quien comenta
+      if (postOwnerId && postOwnerId !== currentUser.id) {
+        await createNotification('comment', postOwnerId, postId)
+      }
     }
 
+    // ─── NOTIFICACIONES ───────────────────────────────────────────
+    async function createNotification(type, toUserId, postId) {
+      await _supabase.from('notifications').insert({
+        user_id: toUserId,
+        from_user_id: currentUser.id,
+        type: type,
+        post_id: postId,
+        read: false
+      })
+    }
+
+    async function loadNotifications() {
+      const { data: notifs } = await _supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(30)
+
+      if (!notifs || notifs.length === 0) {
+        updateBadge(0)
+        return
+      }
+
+      // Cargar perfiles de quienes generaron las notifs
+      const fromIds = [...new Set(notifs.map(n => n.from_user_id).filter(Boolean))]
+      const { data: fromProfiles } = await _supabase.from('profiles').select('id, full_name').in('id', fromIds)
+      const fromMap = {}
+      fromProfiles?.forEach(p => fromMap[p.id] = p)
+
+      const unread = notifs.filter(n => !n.read).length
+      updateBadge(unread)
+
+      const list = document.getElementById('notif-list')
+      if (notifs.length === 0) {
+        list.innerHTML = '<div class="notif-empty">Sin notificaciones aún</div>'
+        return
+      }
+
+      list.innerHTML = notifs.map(n => {
+        const from = fromMap[n.from_user_id]
+        const fromName = from?.full_name || 'Alguien'
+        const initial = fromName.charAt(0).toUpperCase()
+        const isLike = n.type === 'like'
+        const emoji = isLike ? '❤️' : '💬'
+        const action = isLike ? 'le dio Me gusta a tu publicación' : 'comentó tu publicación'
+        const time = timeAgo(n.created_at)
+
+        return `
+          <div class="notif-item ${n.read ? '' : 'unread'}" id="notif-${n.id}" onclick="markRead('${n.id}')">
+            <div class="notif-icon ${n.type}">${emoji}</div>
+            <div class="notif-text">
+              <p><strong>${fromName}</strong> ${action}</p>
+              <div class="notif-time">${time}</div>
+            </div>
+            ${!n.read ? '<div class="notif-dot"></div>' : ''}
+          </div>`
+      }).join('')
+    }
+
+    function updateBadge(count) {
+      const badge = document.getElementById('notif-badge')
+      if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : count
+        badge.classList.add('visible')
+      } else {
+        badge.classList.remove('visible')
+      }
+    }
+
+    async function markRead(notifId) {
+      await _supabase.from('notifications').update({ read: true }).eq('id', notifId)
+      const el = document.getElementById(`notif-${notifId}`)
+      if (el) {
+        el.classList.remove('unread')
+        const dot = el.querySelector('.notif-dot')
+        if (dot) dot.remove()
+      }
+      // Recalcular badge
+      const unreadEls = document.querySelectorAll('.notif-item.unread').length
+      updateBadge(unreadEls)
+    }
+
+    async function markAllRead() {
+      await _supabase.from('notifications').update({ read: true }).eq('user_id', currentUser.id).eq('read', false)
+      document.querySelectorAll('.notif-item').forEach(el => {
+        el.classList.remove('unread')
+        const dot = el.querySelector('.notif-dot')
+        if (dot) dot.remove()
+      })
+      updateBadge(0)
+    }
+
+    function toggleNotifPanel() {
+      const panel = document.getElementById('notif-panel')
+      panel.classList.toggle('open')
+      if (panel.classList.contains('open')) {
+        loadNotifications()
+      }
+    }
+
+    function timeAgo(dateStr) {
+      const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+      if (diff < 60) return 'Hace un momento'
+      if (diff < 3600) return `Hace ${Math.floor(diff / 60)} min`
+      if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} h`
+      return `Hace ${Math.floor(diff / 86400)} días`
+    }
+
+    // ─── MODAL POST ───────────────────────────────────────────────
     function openModal() { document.getElementById('modal-overlay').classList.add('active') }
     function closeModal() {
       document.getElementById('modal-overlay').classList.remove('active')
