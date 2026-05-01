@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiRed — Configuración</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --surface3: #22223a;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.15);
+      --text: #f0f0ff;
+      --text-sec: #9090b0;
+      --text-muted: #5a5a7a;
+      --accent: #7c6aff;
+      --accent2: #ff6ab0;
+      --accent3: #6affb0;
+      --gradient: linear-gradient(135deg, #7c6aff, #ff6ab0);
+      --gradient2: linear-gradient(135deg, #6affb0, #6ab0ff);
+      --danger: #ff4a6a;
+      --warning: #ffb84a;
+      --success: #4affaa;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --font: 'Plus Jakarta Sans', sans-serif;
+      --sidebar-w: 260px;
+      --nav-h: 64px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+    }
+    .nav-logo {
+      font-size: 22px; font-weight: 800;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-center { display: flex; align-items: center; gap: 6px; }
+    .nav-link {
+      padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 500;
+      color: var(--text-sec); text-decoration: none; transition: all .2s;
+      cursor: pointer; border: none; background: none;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--text); background: var(--surface2); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gradient);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      position: relative;
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      margin-top: var(--nav-h);
+      display: flex;
+      min-height: calc(100vh - var(--nav-h));
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      position: fixed; top: var(--nav-h); left: 0; bottom: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 16px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--text-muted); text-transform: uppercase;
+      padding: 12px 10px 6px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; color: var(--text-sec);
+      cursor: pointer; transition: all .2s; border: none; background: none;
+      width: 100%; text-align: left;
+    }
+    .sidebar-item:hover { color: var(--text); background: var(--surface2); }
+    .sidebar-item.active { color: var(--text); background: var(--surface2); }
+    .sidebar-item.active .si-icon { color: var(--accent); }
+    .sidebar-item.danger { color: var(--danger); }
+    .sidebar-item.danger:hover { background: rgba(255,74,106,0.1); }
+    .si-icon { font-size: 18px; width: 24px; text-align: center; }
+    .si-badge {
+      margin-left: auto;
+      background: var(--gradient);
+      color: #fff; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 32px;
+      max-width: 800px;
+    }
+
+    .page-header {
+      margin-bottom: 32px;
+    }
+    .page-header h1 {
+      font-size: 28px; font-weight: 800;
+    }
+    .page-header p {
+      color: var(--text-sec); font-size: 14px; margin-top: 6px;
+    }
+
+    /* ── SECTION ── */
+    .config-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .config-section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .csh-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .csh-icon.purple { background: rgba(124,106,255,0.15); }
+    .csh-icon.pink { background: rgba(255,106,176,0.15); }
+    .csh-icon.green { background: rgba(106,255,176,0.15); }
+    .csh-icon.blue { background: rgba(106,176,255,0.15); }
+    .csh-icon.red { background: rgba(255,74,106,0.15); }
+    .csh-icon.orange { background: rgba(255,184,74,0.15); }
+    .csh-title { font-size: 16px; font-weight: 700; }
+    .csh-desc { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+
+    /* ── CONFIG ITEM ── */
+    .config-item {
+      padding: 16px 24px;
+      display: flex; align-items: center; gap: 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background .2s;
+    }
+    .config-item:last-child { border-bottom: none; }
+    .config-item:hover { background: var(--surface2); }
+    .ci-info { flex: 1; }
+    .ci-label { font-size: 14px; font-weight: 600; }
+    .ci-desc { font-size: 13px; color: var(--text-sec); margin-top: 3px; }
+
+    /* ── TOGGLE ── */
+    .toggle {
+      position: relative; width: 48px; height: 26px; flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0; border-radius: 13px;
+      background: var(--surface3); cursor: pointer; transition: all .3s;
+      border: 1px solid var(--border-hover);
+    }
+    .toggle input:checked + .toggle-track { background: var(--accent); border-color: var(--accent); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; transition: transform .3s;
+      pointer-events: none;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(22px); }
+
+    /* ── SELECT ── */
+    .config-select {
+      background: var(--surface3); border: 1px solid var(--border-hover);
+      color: var(--text); font-family: var(--font); font-size: 13px;
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239090b0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      padding-right: 30px;
+      transition: border-color .2s;
+    }
+    .config-select:focus { border-color: var(--accent); }
+
+    /* ── BUTTON ── */
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-family: var(--font);
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
+      border: none;
+    }
+    .btn-accent { background: var(--gradient); color: #fff; }
+    .btn-accent:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-ghost {
+      background: var(--surface3); color: var(--text-sec);
+      border: 1px solid var(--border-hover);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+    .btn-danger { background: rgba(255,74,106,0.15); color: var(--danger); border: 1px solid rgba(255,74,106,0.3); }
+    .btn-danger:hover { background: rgba(255,74,106,0.25); }
+
+    /* ── PERFIL SECTION ── */
+    .avatar-editor {
+      display: flex; align-items: center; gap: 20px;
+      padding: 20px 24px;
+    }
+    .avatar-big {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--gradient);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; font-weight: 800; flex-shrink: 0;
+      position: relative; cursor: pointer;
+    }
+    .avatar-big-overlay {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.5); display: flex; align-items: center;
+      justify-content: center; font-size: 20px; opacity: 0; transition: opacity .2s;
+    }
+    .avatar-big:hover .avatar-big-overlay { opacity: 1; }
+    .avatar-actions { display: flex; flex-direction: column; gap: 6px; }
+    .avatar-actions p { font-size: 13px; color: var(--text-sec); }
+
+    .config-input {
+      background: var(--surface3); border: 1px solid var(--border-hover);
+      color: var(--text); font-family: var(--font); font-size: 14px;
+      padding: 10px 14px; border-radius: 10px; outline: none; width: 100%;
+      transition: border-color .2s;
+    }
+    .config-input:focus { border-color: var(--accent); }
+    .config-input::placeholder { color: var(--text-muted); }
+
+    .form-row {
+      padding: 12px 24px;
+      display: flex; flex-direction: column; gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-row:last-child { border-bottom: none; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--text-sec); }
+    .form-row-inline {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .char-count { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+
+    /* ── TEMA SELECTOR ── */
+    .theme-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      padding: 16px 24px;
+    }
+    .theme-card {
+      border-radius: 12px; overflow: hidden; cursor: pointer;
+      border: 2px solid transparent; transition: all .2s;
+      position: relative;
+    }
+    .theme-card.active { border-color: var(--accent); }
+    .theme-card.active::after {
+      content: '✓';
+      position: absolute; top: 6px; right: 6px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
+    }
+    .theme-preview {
+      height: 60px; display: flex; flex-direction: column;
+      padding: 8px; gap: 4px;
+    }
+    .tp-bar { height: 6px; border-radius: 3px; }
+    .tp-bar2 { height: 4px; border-radius: 2px; width: 60%; }
+    .theme-name {
+      font-size: 11px; font-weight: 600; text-align: center;
+      padding: 6px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* oscuro */
+    .t-dark .theme-preview { background: #0a0a0f; }
+    .t-dark .tp-bar { background: var(--gradient); }
+    .t-dark .tp-bar2 { background: #22223a; }
+    .t-dark .theme-name { background: #12121a; color: #f0f0ff; }
+    /* claro */
+    .t-light .theme-preview { background: #f5f5ff; }
+    .t-light .tp-bar { background: linear-gradient(135deg,#7c6aff,#ff6ab0); }
+    .t-light .tp-bar2 { background: #e0e0f0; }
+    .t-light .theme-name { background: #fff; color: #222; }
+    /* aurora */
+    .t-aurora .theme-preview { background: #050a14; }
+    .t-aurora .tp-bar { background: linear-gradient(135deg,#00ffcc,#0066ff); }
+    .t-aurora .tp-bar2 { background: #0a1a2e; }
+    .t-aurora .theme-name { background: #0a1020; color: #00ffcc; }
+    /* solar */
+    .t-solar .theme-preview { background: #1a0a00; }
+    .t-solar .tp-bar { background: linear-gradient(135deg,#ff6a00,#ffb84a); }
+    .t-solar .tp-bar2 { background: #2a1400; }
+    .t-solar .theme-name { background: #150800; color: #ffb84a; }
+
+    /* ── ACENTO ── */
+    .accent-row {
+      display: flex; gap: 10px; align-items: center;
+      padding: 16px 24px;
+    }
+    .accent-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer; border: 3px solid transparent; transition: all .2s;
+    }
+    .accent-dot.active { border-color: #fff; transform: scale(1.15); }
+    .accent-dot:hover { transform: scale(1.1); }
+
+    /* ── PRIVACIDAD BADGE ── */
+    .privacy-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    }
+    .pb-public { background: rgba(106,255,176,0.15); color: var(--accent3); }
+    .pb-friends { background: rgba(124,106,255,0.15); color: var(--accent); }
+    .pb-private { background: rgba(255,74,106,0.15); color: var(--danger); }
+
+    /* ── SESIONES ── */
+    .session-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 24px; border-bottom: 1px solid var(--border);
+    }
+    .session-item:last-child { border-bottom: none; }
+    .session-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--surface3); display: flex; align-items: center;
+      justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .session-info { flex: 1; }
+    .session-name { font-size: 14px; font-weight: 600; }
+    .session-meta { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
+    .session-current {
+      font-size: 11px; font-weight: 700; color: var(--accent3);
+      background: rgba(106,255,176,0.1); padding: 3px 8px; border-radius: 6px;
+    }
+
+    /* ── DANGER ZONE ── */
+    .danger-zone .config-item:hover { background: rgba(255,74,106,0.05); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 30px; right: 30px; z-index: 999;
+      background: var(--surface2); border: 1px solid var(--border-hover);
+      border-radius: 12px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(80px); opacity: 0;
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { font-size: 18px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border-hover);
+      border-radius: var(--radius); padding: 28px; width: 420px; max-width: 90vw;
+      transform: scale(.92) translateY(20px); transition: transform .25s;
+    }
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+    .modal h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .modal p { color: var(--text-sec); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; }
+      .theme-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">MiRed</div>
+  <div class="nav-center">
+    <a class="nav-link" href="#">🏠 Inicio</a>
+    <a class="nav-link" href="#">📊 Explorar</a>
+    <a class="nav-link" href="#">📖 Stories</a>
+    <a class="nav-link" href="#">💬 Mensajes</a>
+    <a class="nav-link active" href="#">⚙️ Config</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">J</div>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Cuenta</div>
+    <button class="sidebar-item active" onclick="showSection('perfil')">
+      <span class="si-icon">👤</span> Editar perfil
+    </button>
+    <button class="sidebar-item" onclick="showSection('privacidad')">
+      <span class="si-icon">🔒</span> Privacidad
+    </button>
+    <button class="sidebar-item" onclick="showSection('seguridad')">
+      <span class="si-icon">🛡️</span> Seguridad
+    </button>
+    <button class="sidebar-item" onclick="showSection('sesiones')">
+      <span class="si-icon">📱</span> Sesiones activas <span class="si-badge">3</span>
+    </button>
+
+    <div class="sidebar-section-label">Apariencia</div>
+    <button class="sidebar-item" onclick="showSection('apariencia')">
+      <span class="si-icon">🎨</span> Tema y colores
+    </button>
+    <button class="sidebar-item" onclick="showSection('idioma')">
+      <span class="si-icon">🌐</span> Idioma y región
+    </button>
+    <button class="sidebar-item" onclick="showSection('accesibilidad')">
+      <span class="si-icon">♿</span> Accesibilidad
+    </button>
+
+    <div class="sidebar-section-label">Notificaciones</div>
+    <button class="sidebar-item" onclick="showSection('notificaciones')">
+      <span class="si-icon">🔔</span> Notificaciones
+    </button>
+    <button class="sidebar-item" onclick="showSection('email')">
+      <span class="si-icon">📧</span> Correo electrónico
+    </button>
+
+    <div class="sidebar-section-label">Avanzado</div>
+    <button class="sidebar-item" onclick="showSection('datos')">
+      <span class="si-icon">📦</span> Mis datos
+    </button>
+    <button class="sidebar-item" onclick="showSection('integraciones')">
+      <span class="si-icon">🔗</span> Integraciones
+    </button>
+    <button class="sidebar-item danger" onclick="openModal('cerrar')">
+      <span class="si-icon">🚪</span> Cerrar sesión
+    </button>
+    <button class="sidebar-item danger" onclick="openModal('eliminar')">
+      <span class="si-icon">🗑️</span> Eliminar cuenta
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ── PERFIL ── -->
+    <div id="sec-perfil" class="config-pane">
+      <div class="page-header">
+        <h1>✏️ Editar perfil</h1>
+        <p>Cómo te ven los demás en MiRed</p>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon purple">📸</div>
+          <div>
+            <div class="csh-title">Foto de perfil</div>
+            <div class="csh-desc">Tu imagen en toda la plataforma</div>
+          </div>
+        </div>
+        <div class="avatar-editor">
+          <div class="avatar-big">
+            J
+            <div class="avatar-big-overlay">📷</div>
+          </div>
+          <div class="avatar-actions">
+            <button class="btn btn-accent" onclick="showToast('📸','Foto actualizada')">Cambiar foto</button>
+            <button class="btn btn-ghost">Eliminar foto</button>
+            <p>JPG, PNG o GIF · máx. 5 MB</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon purple">📝</div>
+          <div>
+            <div class="csh-title">Información básica</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Nombre completo</label>
+          <input class="config-input" value="Henyer Valero" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Nombre de usuario</label>
+          <div class="form-row-inline">
+            <input class="config-input" value="@henyer.mv" />
+            <span class="char-count" style="color:var(--accent3)">✓</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Biografía</label>
+          <textarea class="config-input" rows="3" id="bio-input" oninput="updateBio(this)">Estudiante de Ingeniería de Sistemas 💻 | Apasionado por el código y la música 🎸</textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:4px">
+            <span class="char-count" id="bio-count">82 / 160</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Sitio web</label>
+          <input class="config-input" placeholder="https://tuweb.com" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Ubicación</label>
+          <input class="config-input" value="Barranquilla, Colombia" />
+        </div>
+        <div class="config-item" style="justify-content:flex-end; padding-top:16px">
+          <button class="btn btn-ghost">Cancelar</button>
+          <button class="btn btn-accent" onclick="showToast('✅','Perfil guardado correctamente')" style="margin-left:8px">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PRIVACIDAD ── -->
+    <div id="sec-privacidad" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>🔒 Privacidad</h1>
+        <p>Controla quién ve tu contenido y te puede contactar</p>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon pink">👁️</div>
+          <div>
+            <div class="csh-title">Visibilidad del perfil</div>
+            <div class="csh-desc">Quién puede ver tu información</div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Cuenta pública</div>
+            <div class="ci-desc">Cualquiera puede ver tu perfil y publicaciones</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" checked onchange="togglePrivacy(this,'public')">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Mostrar en búsquedas</div>
+            <div class="ci-desc">Tu perfil aparece en resultados de búsqueda</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" checked onchange="showToast('🔍','Preferencia guardada')">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Quién puede seguirte</div>
+          </div>
+          <select class="config-select" onchange="showToast('👥','Preferencia actualizada')">
+            <option selected>Todos</option>
+            <option>Solo conocidos</option>
+            <option>Nadie (solicitud)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon pink">💬</div>
+          <div>
+            <div class="csh-title">Interacciones</div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Quién puede comentar</div>
+          </div>
+          <select class="config-select" onchange="showToast('💬','Preferencia guardada')">
+            <option>Todos</option>
+            <option selected>Solo quien sigo</option>
+            <option>Solo amigos</option>
+            <option>Nadie</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Quién puede enviarte mensajes</div>
+          </div>
+          <select class="config-select" onchange="showToast('✉️','Preferencia guardada')">
+            <option>Todos</option>
+            <option selected>Amigos</option>
+            <option>Nadie</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Mostrar actividad reciente</div>
+            <div class="ci-desc">Cuándo fue la última vez que estuviste activo</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" onchange="showToast('⏰','Preferencia guardada')">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Confirmaciones de lectura</div>
+            <div class="ci-desc">Otros verán cuando lees sus mensajes</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" checked onchange="showToast('✅','Preferencia guardada')">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SEGURIDAD ── -->
+    <div id="sec-seguridad" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>🛡️ Seguridad</h1>
+        <p>Mantén tu cuenta protegida</p>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon green">🔑</div>
+          <div>
+            <div class="csh-title">Contraseña</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Contraseña actual</label>
+          <input class="config-input" type="password" placeholder="••••••••" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Nueva contraseña</label>
+          <input class="config-input" type="password" placeholder="Mínimo 8 caracteres" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Confirmar contraseña</label>
+          <input class="config-input" type="password" placeholder="Repite la contraseña" />
+        </div>
+        <div class="config-item" style="justify-content:flex-end">
+          <button class="btn btn-accent" onclick="showToast('🔑','Contraseña actualizada')">Actualizar contraseña</button>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon green">📲</div>
+          <div>
+            <div class="csh-title">Verificación en dos pasos (2FA)</div>
+            <div class="csh-desc">Capa extra de seguridad para tu cuenta</div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Activar 2FA</div>
+            <div class="ci-desc">Requiere código al iniciar sesión</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" onchange="showToast('🛡️','2FA activado')">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Método preferido</div>
+          </div>
+          <select class="config-select">
+            <option>App autenticadora</option>
+            <option>SMS</option>
+            <option>Correo electrónico</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SESIONES ── -->
+    <div id="sec-sesiones" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>📱 Sesiones activas</h1>
+        <p>Dispositivos conectados a tu cuenta</p>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon blue">📡</div>
+          <div>
+            <div class="csh-title">Dispositivos conectados</div>
+            <div class="csh-desc">3 sesiones activas</div>
+          </div>
+        </div>
+        <div class="session-item">
+          <div class="session-icon">💻</div>
+          <div class="session-info">
+            <div class="session-name">Chrome — Windows 11</div>
+            <div class="session-meta">Barranquilla, Colombia · Ahora</div>
+          </div>
+          <span class="session-current">Actual</span>
+        </div>
+        <div class="session-item">
+          <div class="session-icon">📱</div>
+          <div class="session-info">
+            <div class="session-name">Safari — iPhone 14</div>
+            <div class="session-meta">Barranquilla, Colombia · hace 2h</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:12px" onclick="showToast('🚪','Sesión cerrada')">Cerrar</button>
+        </div>
+        <div class="session-item">
+          <div class="session-icon">🖥️</div>
+          <div class="session-info">
+            <div class="session-name">Firefox — macOS</div>
+            <div class="session-meta">Bogotá, Colombia · hace 5 días</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:12px" onclick="showToast('🚪','Sesión cerrada')">Cerrar</button>
+        </div>
+        <div class="config-item" style="justify-content:flex-end">
+          <button class="btn btn-danger" onclick="showToast('🔴','Todas las sesiones cerradas')">Cerrar todas las demás</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── APARIENCIA ── -->
+    <div id="sec-apariencia" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>🎨 Tema y colores</h1>
+        <p>Personaliza la apariencia de MiRed</p>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon purple">🌙</div>
+          <div>
+            <div class="csh-title">Tema</div>
+          </div>
+        </div>
+        <div class="theme-grid">
+          <div class="theme-card t-dark active" onclick="selectTheme(this)">
+            <div class="theme-preview"><div class="tp-bar"></div><div class="tp-bar2"></div></div>
+            <div class="theme-name">Oscuro</div>
+          </div>
+          <div class="theme-card t-light" onclick="selectTheme(this)">
+            <div class="theme-preview"><div class="tp-bar"></div><div class="tp-bar2"></div></div>
+            <div class="theme-name">Claro</div>
+          </div>
+          <div class="theme-card t-aurora" onclick="selectTheme(this)">
+            <div class="theme-preview"><div class="tp-bar"></div><div class="tp-bar2"></div></div>
+            <div class="theme-name">Aurora</div>
+          </div>
+          <div class="theme-card t-solar" onclick="selectTheme(this)">
+            <div class="theme-preview"><div class="tp-bar"></div><div class="tp-bar2"></div></div>
+            <div class="theme-name">Solar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon purple">🎨</div>
+          <div>
+            <div class="csh-title">Color de acento</div>
+          </div>
+        </div>
+        <div class="accent-row">
+          <div class="accent-dot active" style="background:linear-gradient(135deg,#7c6aff,#ff6ab0)" onclick="selectAccent(this)"></div>
+          <div class="accent-dot" style="background:linear-gradient(135deg,#6affb0,#6ab0ff)" onclick="selectAccent(this)"></div>
+          <div class="accent-dot" style="background:linear-gradient(135deg,#ff6a00,#ffb84a)" onclick="selectAccent(this)"></div>
+          <div class="accent-dot" style="background:linear-gradient(135deg,#ff4a6a,#ff9a4a)" onclick="selectAccent(this)"></div>
+          <div class="accent-dot" style="background:linear-gradient(135deg,#00ccff,#0066ff)" onclick="selectAccent(this)"></div>
+          <div class="accent-dot" style="background:linear-gradient(135deg,#ff6ab0,#cc44ff)" onclick="selectAccent(this)"></div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon purple">📏</div>
+          <div>
+            <div class="csh-title">Tamaño de fuente</div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Tamaño del texto</div>
+          </div>
+          <select class="config-select" onchange="showToast('📏','Tamaño actualizado')">
+            <option>Pequeño</option>
+            <option selected>Mediano</option>
+            <option>Grande</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Reducir animaciones</div>
+            <div class="ci-desc">Para mayor comodidad visual</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" onchange="showToast('✨','Preferencia guardada')">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NOTIFICACIONES ── -->
+    <div id="sec-notificaciones" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>🔔 Notificaciones</h1>
+        <p>Controla qué te avisamos y cuándo</p>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon orange">📲</div>
+          <div>
+            <div class="csh-title">Push notifications</div>
+          </div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Nuevos seguidores</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('🔔','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Likes en publicaciones</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('❤️','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Comentarios</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('💬','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Mensajes directos</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('✉️','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">Stories mencionadas</div>
+          </div>
+          <label class="toggle"><input type="checkbox" onchange="showToast('📖','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info">
+            <div class="ci-label">No molestar</div>
+            <div class="ci-desc">Silenciar de 10 PM a 8 AM</div>
+          </div>
+          <label class="toggle"><input type="checkbox" onchange="showToast('🌙','Modo no molestar activado')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── IDIOMA ── -->
+    <div id="sec-idioma" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>🌐 Idioma y región</h1>
+      </div>
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon blue">🌎</div>
+          <div><div class="csh-title">Preferencias regionales</div></div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Idioma de la app</div></div>
+          <select class="config-select" onchange="showToast('🌐','Idioma actualizado')">
+            <option selected>Español</option>
+            <option>English</option>
+            <option>Português</option>
+            <option>Français</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">País / Región</div></div>
+          <select class="config-select" onchange="showToast('📍','Región actualizada')">
+            <option selected>Colombia 🇨🇴</option>
+            <option>México 🇲🇽</option>
+            <option>Argentina 🇦🇷</option>
+            <option>España 🇪🇸</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Formato de fecha</div></div>
+          <select class="config-select" onchange="showToast('📅','Formato actualizado')">
+            <option selected>DD/MM/AAAA</option>
+            <option>MM/DD/YYYY</option>
+            <option>AAAA-MM-DD</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ACCESIBILIDAD ── -->
+    <div id="sec-accesibilidad" class="config-pane" style="display:none">
+      <div class="page-header">
+        <h1>♿ Accesibilidad</h1>
+      </div>
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon blue">👁️</div>
+          <div><div class="csh-title">Visual y motor</div></div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Alto contraste</div><div class="ci-desc">Mejora la legibilidad del texto</div></div>
+          <label class="toggle"><input type="checkbox" onchange="showToast('👁️','Contraste actualizado')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Texto en negrita</div></div>
+          <label class="toggle"><input type="checkbox" onchange="showToast('𝐁','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Descripción de imágenes (alt text)</div><div class="ci-desc">Genera descripciones automáticas</div></div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('🖼️','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMAIL ── -->
+    <div id="sec-email" class="config-pane" style="display:none">
+      <div class="page-header"><h1>📧 Correo electrónico</h1></div>
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon orange">📬</div>
+          <div><div class="csh-title">Notificaciones por correo</div></div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Resumen semanal</div><div class="ci-desc">Actividad de la semana cada domingo</div></div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('📬','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Alertas de seguridad</div></div>
+          <label class="toggle"><input type="checkbox" checked onchange="showToast('🛡️','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Noticias y novedades</div></div>
+          <label class="toggle"><input type="checkbox" onchange="showToast('📰','Preferencia guardada')"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Correo asociado</label>
+          <input class="config-input" value="henyer@mired.co" />
+        </div>
+        <div class="config-item" style="justify-content:flex-end">
+          <button class="btn btn-accent" onclick="showToast('📧','Correo actualizado')">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DATOS ── -->
+    <div id="sec-datos" class="config-pane" style="display:none">
+      <div class="page-header"><h1>📦 Mis datos</h1></div>
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon green">📁</div>
+          <div><div class="csh-title">Exportar e importar</div></div>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Descargar mis datos</div><div class="ci-desc">Publicaciones, fotos, amigos, mensajes (.zip)</div></div>
+          <button class="btn btn-ghost" onclick="showToast('📦','Preparando tu archivo...')">Solicitar</button>
+        </div>
+        <div class="config-item">
+          <div class="ci-info"><div class="ci-label">Ver historial de actividad</div></div>
+          <button class="btn btn-ghost" onclick="showToast('📊','Cargando historial...')">Ver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── INTEGRACIONES ── -->
+    <div id="sec-integraciones" class="config-pane" style="display:none">
+      <div class="page-header"><h1>🔗 Integraciones</h1></div>
+      <div class="config-section">
+        <div class="config-section-header">
+          <div class="csh-icon blue">🔌</div>
+          <div><div class="csh-title">Apps conectadas</div></div>
+        </div>
+        <div class="config-item">
+          <div style="font-size:24px">🟢</div>
+          <div class="ci-info"><div class="ci-label">Spotify</div><div class="ci-desc">Comparte lo que estás escuchando</div></div>
+          <button class="btn btn-accent" onclick="showToast('🎵','Spotify conectado')">Conectar</button>
+        </div>
+        <div class="config-item">
+          <div style="font-size:24px">📸</div>
+          <div class="ci-info"><div class="ci-label">Instagram</div><div class="ci-desc">Sincroniza tus fotos</div></div>
+          <button class="btn btn-ghost" onclick="showToast('📸','Instagram vinculado')">Vincular</button>
+        </div>
+        <div class="config-item">
+          <div style="font-size:24px">🎮</div>
+          <div class="ci-info"><div class="ci-label">Discord</div><div class="ci-desc">Muestra tu estado de juego</div></div>
+          <button class="btn btn-ghost" onclick="showToast('🎮','Discord vinculado')">Vincular</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODALES -->
+<div class="modal-overlay" id="modal-cerrar">
+  <div class="modal">
+    <h3>🚪 Cerrar sesión</h3>
+    <p>¿Estás seguro? Tendrás que iniciar sesión de nuevo para acceder a tu cuenta.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('cerrar')">Cancelar</button>
+      <button class="btn btn-danger" onclick="showToast('👋','¡Hasta pronto!');closeModal('cerrar')">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-eliminar">
+  <div class="modal">
+    <h3>🗑️ Eliminar cuenta</h3>
+    <p>Esta acción es <strong>permanente e irreversible</strong>. Se borrarán todos tus datos, publicaciones, amigos y mensajes para siempre.</p>
+    <div class="form-row" style="margin-bottom:16px">
+      <label class="form-label" style="margin-bottom:8px">Escribe <strong>ELIMINAR</strong> para confirmar</label>
+      <input class="config-input" placeholder="ELIMINAR" id="confirm-delete" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('eliminar')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Eliminar definitivamente</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span id="toast-msg">Guardado</span>
+</div>
+
+<script>
+  // ── Sections ──
+  function showSection(id) {
+    document.querySelectorAll('.config-pane').forEach(p => p.style.display = 'none');
+    document.getElementById('sec-' + id).style.display = 'block';
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  // ── Bio counter ──
+  function updateBio(el) {
+    document.getElementById('bio-count').textContent = el.value.length + ' / 160';
+    if (el.value.length > 160) el.value = el.value.slice(0, 160);
+  }
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(icon, msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-icon').textContent = icon;
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ── Modal ──
+  function openModal(id) { document.getElementById('modal-' + id).classList.add('open'); }
+  function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); }
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  function confirmDelete() {
+    const val = document.getElementById('confirm-delete').value;
+    if (val === 'ELIMINAR') {
+      showToast('💔', 'Cuenta eliminada'); closeModal('eliminar');
+    } else {
+      showToast('⚠️', 'Escribe ELIMINAR para confirmar');
+    }
+  }
+
+  // ── Theme ──
+  function selectTheme(el) {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const name = el.querySelector('.theme-name').textContent;
+    showToast('🎨', 'Tema "' + name + '" aplicado');
+  }
+
+  // ── Accent ──
+  function selectAccent(el) {
+    document.querySelectorAll('.accent-dot').forEach(d => d.classList.remove('active'));
+    el.classList.add('active');
+    showToast('🎨', 'Color de acento actualizado');
+  }
+</script>
+</body>
+</html>
