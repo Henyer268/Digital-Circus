@@ -71,6 +71,7 @@
     }
     .notif-icon.like { background: #e94560; font-size: 1rem; }
     .notif-icon.comment { background: #0f3460; font-size: 1rem; }
+    .notif-icon.friend_request { background: #27ae60; font-size: 1rem; }
     .notif-text { flex: 1; }
     .notif-text strong { font-weight: 700; color: #1a1a2e; }
     .notif-text p { font-size: 0.85rem; color: #444; margin-top: 1px; line-height: 1.4; }
@@ -93,6 +94,7 @@
     .sidebar-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: #1a1a2e; }
     .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; cursor: pointer; color: #444; font-size: 0.95rem; transition: background 0.2s; }
     .nav-item:hover { background: #f0f2f5; }
+    .nav-item.active { background: #e8eeff; color: #0f3460; font-weight: 600; }
     .feed { display: flex; flex-direction: column; gap: 16px; }
     .create-post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .create-post-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -173,9 +175,9 @@
       </div>
       <div class="card">
         <div class="sidebar-title">Menú</div>
-        <div class="nav-item" onclick="window.location.href='feed.html'">🏠 Inicio</div>
+        <div class="nav-item active" onclick="window.location.href='feed.html'">🏠 Inicio</div>
         <div class="nav-item" onclick="window.location.href='perfil.html'">👤 Mi perfil</div>
-        <div class="nav-item">👥 Amigos</div>
+        <div class="nav-item" onclick="window.location.href='amigos.html'">👥 Amigos</div>
         <div class="nav-item">💬 Mensajes</div>
       </div>
     </aside>
@@ -221,7 +223,7 @@
 
     let currentUser = null
     let currentProfile = null
-    let postsOwnerMap = {} // post_id -> user_id del dueño
+    let postsOwnerMap = {}
 
     async function init() {
       const { data: { session } } = await _supabase.auth.getSession()
@@ -250,7 +252,6 @@
       loadPosts()
       loadNotifications()
 
-      // Cerrar panel al hacer clic fuera
       document.addEventListener('click', (e) => {
         const wrap = document.querySelector('.notif-bell-wrap')
         if (!wrap.contains(e.target)) {
@@ -278,7 +279,6 @@
       const profileMap = {}
       profiles?.forEach(p => profileMap[p.id] = p)
 
-      // Guardar mapa de dueños de posts para notificaciones
       posts.forEach(p => { postsOwnerMap[p.id] = p.user_id })
 
       container.innerHTML = posts.map(post => {
@@ -289,10 +289,7 @@
         const postLikes = allLikes?.filter(l => l.post_id === post.id) || []
         const postComments = allComments?.filter(c => c.post_id === post.id) || []
         const userLiked = postLikes.some(l => l.user_id === currentUser.id)
-
-        const avatarHTML = profile?.avatar_url
-          ? `<img src="${profile.avatar_url}" alt="${name}" />`
-          : initial
+        const avatarHTML = profile?.avatar_url ? `<img src="${profile.avatar_url}" alt="${name}" />` : initial
 
         const commentsHTML = postComments.map(c => {
           const cp = profileMap[c.user_id]
@@ -351,8 +348,6 @@
       } else {
         await _supabase.from('likes').insert({ user_id: currentUser.id, post_id: postId })
         document.getElementById(`like-btn-${postId}`).classList.add('liked')
-
-        // Notificar solo si el dueño del post NO es quien da like
         if (postOwnerId && postOwnerId !== currentUser.id) {
           await createNotification('like', postOwnerId, postId)
         }
@@ -387,7 +382,6 @@
         </div>`
       document.getElementById(`comments-list-${postId}`).insertAdjacentHTML('beforeend', commentHTML)
 
-      // Notificar solo si el dueño del post NO es quien comenta
       if (postOwnerId && postOwnerId !== currentUser.id) {
         await createNotification('comment', postOwnerId, postId)
       }
@@ -412,12 +406,8 @@
         .order('created_at', { ascending: false })
         .limit(30)
 
-      if (!notifs || notifs.length === 0) {
-        updateBadge(0)
-        return
-      }
+      if (!notifs || notifs.length === 0) { updateBadge(0); return }
 
-      // Cargar perfiles de quienes generaron las notifs
       const fromIds = [...new Set(notifs.map(n => n.from_user_id).filter(Boolean))]
       const { data: fromProfiles } = await _supabase.from('profiles').select('id, full_name').in('id', fromIds)
       const fromMap = {}
@@ -427,18 +417,14 @@
       updateBadge(unread)
 
       const list = document.getElementById('notif-list')
-      if (notifs.length === 0) {
-        list.innerHTML = '<div class="notif-empty">Sin notificaciones aún</div>'
-        return
-      }
 
       list.innerHTML = notifs.map(n => {
         const from = fromMap[n.from_user_id]
         const fromName = from?.full_name || 'Alguien'
-        const initial = fromName.charAt(0).toUpperCase()
-        const isLike = n.type === 'like'
-        const emoji = isLike ? '❤️' : '💬'
-        const action = isLike ? 'le dio Me gusta a tu publicación' : 'comentó tu publicación'
+        let emoji = '🔔', action = 'interactuó contigo'
+        if (n.type === 'like') { emoji = '❤️'; action = 'le dio Me gusta a tu publicación' }
+        else if (n.type === 'comment') { emoji = '💬'; action = 'comentó tu publicación' }
+        else if (n.type === 'friend_request') { emoji = '👥'; action = 'te envió una solicitud de amistad' }
         const time = timeAgo(n.created_at)
 
         return `
@@ -471,7 +457,6 @@
         const dot = el.querySelector('.notif-dot')
         if (dot) dot.remove()
       }
-      // Recalcular badge
       const unreadEls = document.querySelectorAll('.notif-item.unread').length
       updateBadge(unreadEls)
     }
@@ -489,9 +474,7 @@
     function toggleNotifPanel() {
       const panel = document.getElementById('notif-panel')
       panel.classList.toggle('open')
-      if (panel.classList.contains('open')) {
-        loadNotifications()
-      }
+      if (panel.classList.contains('open')) loadNotifications()
     }
 
     function timeAgo(dateStr) {
