@@ -1,9 +1,4 @@
-const SUPABASE_URL = 'https://xdhvztdhjotzjwwrwijx.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-supabase.auth.getSession().then(({ data }) => {
+_supabase.auth.getSession().then(({ data }) => {
   if (data.session) window.location.href = 'feed.html'
 })
 
@@ -24,13 +19,9 @@ function setMessage(msg, type = 'error') {
 async function login() {
   const email = document.getElementById('login-email').value.trim()
   const password = document.getElementById('login-password').value
-
   if (!email || !password) return setMessage('Completa todos los campos.')
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-
+  const { error } = await _supabase.auth.signInWithPassword({ email, password })
   if (error) return setMessage('Correo o contraseña incorrectos.')
-
   setMessage('¡Bienvenido! Cargando...', 'success')
   setTimeout(() => window.location.href = 'feed.html', 1000)
 }
@@ -39,25 +30,19 @@ async function register() {
   const name = document.getElementById('reg-name').value.trim()
   const email = document.getElementById('reg-email').value.trim()
   const password = document.getElementById('reg-password').value
-
   if (!name || !email || !password) return setMessage('Completa todos los campos.')
   if (password.length < 6) return setMessage('La contraseña debe tener al menos 6 caracteres.')
 
-  const { data, error } = await supabase.auth.signUp({ email, password })
-
+  const { data, error } = await _supabase.auth.signUp({ email, password })
   if (error) return setMessage('Error: ' + error.message)
 
   if (data.user) {
-    const { error: profileError } = await supabase.from('profiles').insert({
+    const { error: profileError } = await _supabase.from('profiles').insert({
       id: data.user.id,
       full_name: name,
       email: email
     })
-
-    if (profileError) {
-      return setMessage('Error en perfil: ' + profileError.message)
-    }
-
+    if (profileError) return setMessage('Error en perfil: ' + profileError.message)
     setMessage('¡Cuenta creada!', 'success')
     setTimeout(() => window.location.href = 'feed.html', 1500)
   }
