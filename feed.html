@@ -242,7 +242,7 @@
       }
 
       container.innerHTML = posts.map(post => {
-        const name = post.profiles?.full_name || 'Usuario'
+        const name = currentProfile?.full_name || 'Usuario'
         const initial = name.charAt(0).toUpperCase()
         const time = new Date(post.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
         return `
