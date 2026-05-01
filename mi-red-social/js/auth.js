@@ -3,7 +3,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-// Redirigir si ya está logueado
 supabase.auth.getSession().then(({ data }) => {
   if (data.session) window.location.href = 'feed.html'
 })
@@ -31,7 +30,7 @@ async function login() {
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) return setMessage('Correo o contraseña incorrectos.')
-  
+
   setMessage('¡Bienvenido! Cargando...', 'success')
   setTimeout(() => window.location.href = 'feed.html', 1000)
 }
@@ -44,15 +43,10 @@ async function register() {
   if (!name || !email || !password) return setMessage('Completa todos los campos.')
   if (password.length < 6) return setMessage('La contraseña debe tener al menos 6 caracteres.')
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name: name } }
-  })
+  const { data, error } = await supabase.auth.signUp({ email, password })
 
   if (error) return setMessage('Error: ' + error.message)
 
-  // Esperar un momento y luego insertar el perfil
   if (data.user) {
     const { error: profileError } = await supabase.from('profiles').insert({
       id: data.user.id,
@@ -61,14 +55,10 @@ async function register() {
     })
 
     if (profileError) {
-      console.error('Error perfil:', profileError)
-      return setMessage('Cuenta creada pero error en perfil: ' + profileError.message)
+      return setMessage('Error en perfil: ' + profileError.message)
     }
 
-    setMessage('¡Cuenta creada exitosamente!', 'success')
+    setMessage('¡Cuenta creada!', 'success')
     setTimeout(() => window.location.href = 'feed.html', 1500)
   }
-}
-
-  setMessage('¡Cuenta creada! Revisa tu correo para confirmar.', 'success')
 }
