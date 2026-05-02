@@ -54,7 +54,7 @@
     }
     .nav-logo {
       font-size: 22px; font-weight: 800;
-      background: var(--gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .nav-center { display: flex; align-items: center; gap: 6px; }
     .nav-link {
@@ -393,11 +393,34 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
 
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; padding: 20px; }
-      .theme-grid { grid-template-columns: repeat(2,1fr); }
-    }
+    /* Bottom Nav mobile */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 62px;
+  background: rgba(10,10,15,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  z-index: 200;
+  align-items: center;
+  justify-content: space-around;
+}
+.bn-item {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 3px; flex: 1; height: 100%;
+  color: var(--text-sec); text-decoration: none; font-size: 10px;
+  cursor: pointer; border: none; background: none; font-family: var(--font);
+}
+.bn-item.active { color: var(--accent); }
+.bn-item .bn-icon { font-size: 20px; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .nav .nav-center { display: none; }
+  .main { margin-left: 0; padding: 20px; padding-bottom: 78px; }
+  .theme-grid { grid-template-columns: repeat(2,1fr); }
+  .bottom-nav { display: flex; }
+}
   </style>
 </head>
 <body>
@@ -1119,5 +1142,13 @@
     showToast('🎨', 'Color de acento actualizado');
   }
 </script>
+<nav class="bottom-nav">
+  <a href="feed.html" class="bn-item"><span class="bn-icon">🏠</span>Inicio</a>
+  <a href="explorar.html" class="bn-item"><span class="bn-icon">🔍</span>Explorar</a>
+  <a href="mensajes.html" class="bn-item"><span class="bn-icon">💬</span>Mensajes</a>
+  <a href="amigos.html" class="bn-item"><span class="bn-icon">👥</span>Amigos</a>
+  <button class="bn-item active"><span class="bn-icon">⚙️</span>Config</button>
+  <a href="perfil.html" class="bn-item"><span class="bn-icon">👤</span>Perfil</a>
+</nav>
 </body>
 </html>

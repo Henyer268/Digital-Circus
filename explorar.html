@@ -498,6 +498,49 @@
     .content > *:nth-child(3) { animation-delay: .15s; }
     .content > *:nth-child(4) { animation-delay: .2s; }
     .content > *:nth-child(5) { animation-delay: .25s; }
+    /* Bottom Nav mobile */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 62px;
+  background: rgba(10,10,15,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  z-index: 200;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px;
+}
+.bn-item {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 3px; flex: 1; height: 100%;
+  color: var(--muted); text-decoration: none; font-size: 10px;
+  transition: color .2s; position: relative;
+  cursor: pointer; border: none; background: none; font-family: var(--font-body);
+}
+.bn-item.active { color: var(--accent); }
+.bn-item svg { width: 22px; height: 22px; }
+.bn-badge {
+  position: absolute; top: 8px; left: calc(50% + 6px);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent2); border: 2px solid var(--bg);
+}
+.bn-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--grad); display: flex; align-items: center;
+  justify-content: center; font-size: 11px; font-weight: 700; color: #fff;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .bottom-nav { display: flex; }
+  .content { padding: 16px; padding-bottom: 78px; }
+  .topbar { padding: 12px 16px; gap: 10px; }
+  .topbar h1 { font-size: 18px; }
+  .explore-grid { columns: 1; }
+  .toast { bottom: 76px; }
+}
   </style>
 </head>
 <body>
@@ -821,7 +864,33 @@
 <div class="toast" id="toast"></div>
 <!-- Liked pop -->
 <div class="liked-pop" id="likedPop">❤️</div>
-
+<nav class="bottom-nav">
+  <a href="feed.html" class="bn-item">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Inicio
+  </a>
+  <a href="explorar.html" class="bn-item active">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Explorar
+  </a>
+  <a href="stories.html" class="bn-item">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+    Stories
+  </a>
+  <a href="mensajes.html" class="bn-item">
+    <div class="bn-badge"></div>
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    Mensajes
+  </a>
+  <a href="amigos.html" class="bn-item">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Amigos
+  </a>
+  <a href="perfil.html" class="bn-item">
+    <div class="bn-avatar">H</div>
+    Perfil
+  </a>
+</nav>
 <script>
   function toggleNotif() {
     document.getElementById('notifPanel').classList.toggle('open');
