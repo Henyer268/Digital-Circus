@@ -6,623 +6,610 @@
   <title>MiRed — Mensajes</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: #f0f2f5; min-height: 100vh; }
+    body { background: #f0f2f5; }
 
-    /* ── NAVBAR ── */
+    /* NAVBAR */
     .navbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: #fff; border-bottom: 1px solid #e4e6ea;
-      height: 56px; display: flex; align-items: center;
-      padding: 0 20px; justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; height: 56px;
+      background: #0f3460; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-    .navbar-brand { font-size: 22px; font-weight: 700; color: #1877f2; letter-spacing: -0.5px; }
-    .navbar-search {
-      flex: 1; max-width: 240px; margin: 0 16px;
-      background: #f0f2f5; border: none; border-radius: 20px;
-      padding: 8px 16px; font-size: 14px; color: #050505; outline: none;
-    }
-    .navbar-actions { display: flex; align-items: center; gap: 8px; }
-    .nav-icon-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: #e4e6ea; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; position: relative; transition: background 0.2s;
-    }
-    .nav-icon-btn:hover { background: #d8dadf; }
-    .badge {
-      position: absolute; top: 2px; right: 2px;
-      background: #e41e3f; color: #fff; font-size: 10px; font-weight: 700;
-      border-radius: 10px; padding: 1px 5px; min-width: 16px; text-align: center;
-      border: 2px solid #fff;
-    }
-    .avatar-sm {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(135deg, #1877f2, #0a5dba);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 14px; cursor: pointer;
-    }
+    .navbar-logo { color: white; font-size: 1.4rem; font-weight: 700; cursor: pointer; }
+    .navbar-right { display: flex; align-items: center; gap: 12px; }
+    .navbar-user { color: white; font-size: 0.9rem; }
+    .btn-logout { background: #e94560; color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+    .btn-logout:hover { background: #c73652; }
 
-    /* ── NOTIF PANEL ── */
-    .notif-panel {
-      display: none; position: fixed; top: 60px; right: 16px; z-index: 200;
-      width: 360px; background: #fff; border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden;
-    }
-    .notif-panel.show { display: block; }
-    .notif-header { padding: 16px 20px 10px; font-size: 20px; font-weight: 700; }
-    .notif-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 20px; cursor: pointer; transition: background 0.15s;
-    }
-    .notif-item:hover { background: #f0f2f5; }
-    .notif-avatar {
-      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg,#1877f2,#0a5dba);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 16px; position: relative;
-    }
-    .notif-dot {
-      position: absolute; bottom: 1px; right: 1px; width: 12px; height: 12px;
-      background: #1877f2; border-radius: 50%; border: 2px solid #fff;
-    }
+    /* CAMPANA */
+    .notif-bell-wrap { position: relative; }
+    .notif-bell { background: rgba(255,255,255,0.15); border: none; color: white; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .notif-bell:hover { background: rgba(255,255,255,0.25); }
+    .notif-badge { position: absolute; top: -2px; right: -2px; background: #e94560; color: white; font-size: 0.68rem; font-weight: 700; border-radius: 50%; width: 18px; height: 18px; display: none; align-items: center; justify-content: center; border: 2px solid #0f3460; }
+    .notif-badge.visible { display: flex; }
+    .notif-panel { position: absolute; top: 48px; right: 0; width: 340px; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); z-index: 200; display: none; overflow: hidden; }
+    .notif-panel.open { display: block; }
+    .notif-panel-header { padding: 14px 16px; font-weight: 700; font-size: 0.95rem; border-bottom: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: center; }
+    .notif-mark-all { font-size: 0.8rem; color: #0f3460; cursor: pointer; font-weight: 600; border: none; background: none; }
+    .notif-list { max-height: 380px; overflow-y: auto; }
+    .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #f8f8f8; cursor: pointer; transition: background 0.15s; }
+    .notif-item:hover { background: #f8f9ff; }
+    .notif-item.unread { background: #f0f4ff; }
+    .notif-icon { width: 36px; height: 36px; border-radius: 50%; background: #0f3460; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .notif-icon.like { background: #e94560; }
+    .notif-icon.comment { background: #0f3460; }
+    .notif-icon.friend_request { background: #27ae60; }
     .notif-text { flex: 1; }
-    .notif-text strong { font-weight: 600; font-size: 14px; }
-    .notif-text span { font-size: 13px; color: #65676b; }
-    .notif-time { font-size: 12px; color: #1877f2; font-weight: 600; }
-    .notif-unread { background: #e7f3ff; }
+    .notif-text p { font-size: 0.85rem; color: #444; line-height: 1.4; }
+    .notif-text strong { font-weight: 700; color: #1a1a2e; }
+    .notif-time { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+    .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #0f3460; flex-shrink: 0; margin-top: 6px; }
+    .notif-empty { padding: 32px 16px; text-align: center; color: #aaa; font-size: 0.9rem; }
 
-    /* ── LAYOUT ── */
-    .layout {
-      display: flex; padding-top: 56px; min-height: 100vh;
+    /* LAYOUT */
+    .main-layout {
+      max-width: 1100px; margin: 0 auto; padding: 56px 0 0;
+      display: grid; grid-template-columns: 260px 1fr;
+      height: 100vh;
     }
 
-    /* ── SIDEBAR ── */
+    /* SIDEBAR */
     .sidebar {
-      width: 240px; position: fixed; top: 56px; left: 0; bottom: 0;
-      background: #fff; border-right: 1px solid #e4e6ea;
-      padding: 12px 8px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 16px; border-right: 1px solid #e0e0e0;
+      background: white; overflow-y: auto;
     }
-    .sidebar-nav a {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px; border-radius: 8px; text-decoration: none;
-      color: #050505; font-size: 15px; font-weight: 500; transition: background 0.15s;
+    .card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .profile-card { text-align: center; }
+    .s-avatar { width: 72px; height: 72px; border-radius: 50%; background: #0f3460; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: 700; overflow: hidden; }
+    .s-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+    .profile-email { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .sidebar-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: #1a1a2e; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; cursor: pointer; color: #444; font-size: 0.95rem; transition: background 0.2s; }
+    .nav-item:hover { background: #f0f2f5; }
+    .nav-item.active { background: #e8eeff; color: #0f3460; font-weight: 600; }
+
+    /* CHAT AREA */
+    .chat-area {
+      display: grid; grid-template-columns: 300px 1fr;
+      height: calc(100vh - 56px);
     }
-    .sidebar-nav a:hover { background: #f0f2f5; }
-    .sidebar-nav a.active { background: #e7f3ff; color: #1877f2; }
-    .sidebar-nav a .icon { font-size: 20px; width: 28px; text-align: center; }
-    .sidebar-divider { height: 1px; background: #e4e6ea; margin: 8px 0; }
 
-    /* ── MAIN CHAT AREA ── */
-    .main { margin-left: 240px; flex: 1; display: flex; height: calc(100vh - 56px); }
-
-    /* ── CONVERSATIONS LIST ── */
+    /* CONVERSATIONS LIST */
     .conv-list {
-      width: 340px; border-right: 1px solid #e4e6ea;
-      background: #fff; display: flex; flex-direction: column;
+      border-right: 1px solid #e0e0e0; background: white;
+      display: flex; flex-direction: column;
     }
-    .conv-list-header {
-      padding: 16px 16px 10px; border-bottom: 1px solid #e4e6ea;
-    }
-    .conv-list-header h2 { font-size: 20px; font-weight: 700; color: #050505; margin-bottom: 10px; }
-    .conv-search {
-      width: 100%; background: #f0f2f5; border: none; border-radius: 20px;
-      padding: 8px 16px; font-size: 14px; outline: none; color: #050505;
-    }
-    .conv-tabs { display: flex; padding: 8px 16px; gap: 8px; border-bottom: 1px solid #e4e6ea; }
-    .conv-tab {
-      padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 500;
-      cursor: pointer; border: none; background: #e4e6ea; color: #65676b; transition: all 0.15s;
-    }
-    .conv-tab.active { background: #e7f3ff; color: #1877f2; }
+    .conv-list-header { padding: 16px; border-bottom: 1px solid #f0f2f5; }
+    .conv-list-header h2 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+    .conv-search { width: 100%; background: #f0f2f5; border: none; border-radius: 20px; padding: 8px 16px; font-size: 0.9rem; outline: none; }
     .conv-items { flex: 1; overflow-y: auto; }
     .conv-item {
       display: flex; align-items: center; gap: 12px;
-      padding: 10px 16px; cursor: pointer; transition: background 0.15s;
+      padding: 12px 16px; cursor: pointer; transition: background 0.15s;
+      border-bottom: 1px solid #f8f8f8;
     }
-    .conv-item:hover { background: #f0f2f5; }
-    .conv-item.active { background: #e7f3ff; }
+    .conv-item:hover { background: #f8f9ff; }
+    .conv-item.active { background: #e8eeff; }
     .conv-item.unread .conv-name { font-weight: 700; }
-    .conv-item.unread .conv-preview { color: #050505; font-weight: 500; }
     .conv-avatar {
-      width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 18px; position: relative;
+      width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+      background: #0f3460; color: white; font-weight: 700; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
-    .online-ring { border: 2px solid #fff; }
-    .online-dot {
-      position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px;
-      background: #31a24c; border-radius: 50%; border: 2px solid #fff;
-    }
+    .conv-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .conv-info { flex: 1; min-width: 0; }
-    .conv-name { font-size: 15px; color: #050505; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .conv-preview { font-size: 13px; color: #65676b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .conv-name { font-size: 0.95rem; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-preview { font-size: 0.8rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
     .conv-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-    .conv-time { font-size: 12px; color: #65676b; }
-    .conv-badge {
-      background: #1877f2; color: #fff; font-size: 11px; font-weight: 700;
-      border-radius: 10px; padding: 1px 6px; min-width: 18px; text-align: center;
-    }
+    .conv-time { font-size: 0.75rem; color: #aaa; }
+    .conv-unread-badge { background: #0f3460; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 10px; padding: 2px 7px; }
+    .conv-empty { padding: 32px 16px; text-align: center; color: #aaa; font-size: 0.9rem; }
 
-    /* ── CHAT WINDOW ── */
-    .chat-window {
-      flex: 1; display: flex; flex-direction: column; background: #f0f2f5;
+    /* CHAT WINDOW */
+    .chat-window { display: flex; flex-direction: column; background: #f0f2f5; }
+    .chat-empty {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; color: #aaa;
     }
+    .chat-empty .empty-icon { font-size: 3rem; }
+    .chat-empty h3 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; }
+    .chat-empty p { font-size: 0.9rem; text-align: center; max-width: 260px; }
+
     .chat-header {
-      background: #fff; border-bottom: 1px solid #e4e6ea;
+      background: white; border-bottom: 1px solid #e0e0e0;
       padding: 12px 20px; display: flex; align-items: center; gap: 12px;
     }
     .chat-header-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 16px; position: relative;
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: #0f3460; color: white; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
-    .chat-header-info h3 { font-size: 16px; font-weight: 600; color: #050505; }
-    .chat-header-info span { font-size: 13px; color: #31a24c; font-weight: 500; }
-    .chat-header-actions { margin-left: auto; display: flex; gap: 4px; }
-    .chat-action-btn {
-      width: 36px; height: 36px; border-radius: 50%; background: #e4e6ea;
-      border: none; cursor: pointer; font-size: 16px; display: flex;
-      align-items: center; justify-content: center; transition: background 0.15s;
-    }
-    .chat-action-btn:hover { background: #d8dadf; }
+    .chat-header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .chat-header-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
 
-    /* ── MESSAGES ── */
-    .messages-area {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .day-separator {
-      text-align: center; font-size: 12px; color: #65676b;
-      margin: 8px 0; position: relative;
-    }
-    .day-separator::before, .day-separator::after {
-      content: ''; position: absolute; top: 50%; width: 40%;
-      height: 1px; background: #e4e6ea;
-    }
-    .day-separator::before { left: 0; }
-    .day-separator::after { right: 0; }
-
-    .msg-group { display: flex; flex-direction: column; gap: 2px; }
-    .msg-group.me { align-items: flex-end; }
-    .msg-group.other { align-items: flex-start; }
-    .msg-group-header {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
-    }
-    .msg-group.me .msg-group-header { flex-direction: row-reverse; }
-    .msg-group-avatar {
-      width: 28px; height: 28px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 11px; flex-shrink: 0;
-    }
-    .msg-group-name { font-size: 12px; color: #65676b; }
-
+    /* MESSAGES */
+    .messages-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .msg-row { display: flex; }
+    .msg-row.me { justify-content: flex-end; }
+    .msg-row.other { justify-content: flex-start; }
     .bubble {
       max-width: 65%; padding: 10px 14px; border-radius: 18px;
-      font-size: 15px; line-height: 1.4; word-break: break-word;
+      font-size: 0.92rem; line-height: 1.4; word-break: break-word;
     }
-    .msg-group.other .bubble {
-      background: #fff; color: #050505; border-radius: 18px 18px 18px 4px;
-    }
-    .msg-group.me .bubble {
-      background: #1877f2; color: #fff; border-radius: 18px 18px 4px 18px;
-    }
-    .bubble-time { font-size: 11px; margin-top: 4px; color: #65676b; }
-    .msg-group.me .bubble-time { text-align: right; }
+    .msg-row.me .bubble { background: #0f3460; color: white; border-radius: 18px 18px 4px 18px; }
+    .msg-row.other .bubble { background: white; color: #1a1a2e; border-radius: 18px 18px 18px 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .bubble-time { font-size: 0.7rem; margin-top: 4px; color: #aaa; }
+    .msg-row.me .bubble-time { text-align: right; }
+    .day-sep { text-align: center; font-size: 0.75rem; color: #aaa; margin: 8px 0; }
 
-    /* ── INPUT AREA ── */
+    /* INPUT */
     .chat-input-area {
-      background: #fff; border-top: 1px solid #e4e6ea;
+      background: white; border-top: 1px solid #e0e0e0;
       padding: 12px 16px; display: flex; align-items: center; gap: 10px;
     }
-    .input-action-btn {
-      width: 36px; height: 36px; border-radius: 50%; background: none;
-      border: none; cursor: pointer; font-size: 20px; color: #1877f2;
-      display: flex; align-items: center; justify-content: center; transition: background 0.15s;
-    }
-    .input-action-btn:hover { background: #e7f3ff; }
     .chat-input {
       flex: 1; background: #f0f2f5; border: none; border-radius: 20px;
-      padding: 10px 16px; font-size: 15px; outline: none; color: #050505;
-      resize: none; max-height: 120px; overflow-y: auto; font-family: 'Segoe UI', sans-serif;
+      padding: 10px 16px; font-size: 0.92rem; outline: none; font-family: inherit;
+      resize: none; max-height: 120px; overflow-y: auto;
     }
     .send-btn {
-      width: 36px; height: 36px; border-radius: 50%; background: #1877f2;
-      border: none; cursor: pointer; color: #fff; font-size: 18px;
+      width: 38px; height: 38px; border-radius: 50%; background: #0f3460;
+      border: none; cursor: pointer; color: white; font-size: 1rem;
       display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+      flex-shrink: 0;
     }
-    .send-btn:hover { background: #166fe5; }
-    .send-btn:disabled { background: #e4e6ea; cursor: default; }
+    .send-btn:hover { background: #e94560; }
+    .send-btn:disabled { background: #ccc; cursor: default; }
 
-    /* ── EMPTY STATE ── */
-    .chat-empty {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 16px; color: #65676b;
-    }
-    .chat-empty .empty-icon { font-size: 56px; }
-    .chat-empty h3 { font-size: 20px; font-weight: 700; color: #050505; }
-    .chat-empty p { font-size: 15px; text-align: center; max-width: 280px; }
-    .chat-empty button {
-      background: #1877f2; color: #fff; border: none; border-radius: 8px;
-      padding: 10px 24px; font-size: 15px; font-weight: 600; cursor: pointer;
-    }
-    .chat-empty button:hover { background: #166fe5; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a2e; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; z-index: 999; transition: transform 0.3s ease; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: #27ae60; }
+    .toast.error { background: #e94560; }
+
+    .typing-indicator { font-size: 0.8rem; color: #888; padding: 4px 16px; min-height: 20px; }
   </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
-  <div class="navbar-brand">MiRed</div>
-  <input class="navbar-search" type="text" placeholder="🔍  Buscar en MiRed…" />
-  <div class="navbar-actions">
-    <button class="nav-icon-btn" onclick="toggleNotif()">🔔<span class="badge" id="notifBadge">3</span></button>
-    <div class="avatar-sm" onclick="window.location='perfil.html'">TU</div>
+  <div class="navbar-logo" onclick="window.location.href='feed.html'">🌐 MiRed</div>
+  <div class="navbar-right">
+    <span class="navbar-user" id="navbar-name">Cargando...</span>
+    <div class="notif-bell-wrap">
+      <button class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">🔔</button>
+      <div class="notif-badge" id="notif-badge">0</div>
+      <div class="notif-panel" id="notif-panel">
+        <div class="notif-panel-header">
+          <span>Notificaciones</span>
+          <button class="notif-mark-all" onclick="markAllRead()">Marcar todo como leído</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div class="notif-empty">Sin notificaciones aún</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
   </div>
 </nav>
 
-<!-- NOTIF PANEL -->
-<div class="notif-panel" id="notifPanel">
-  <div class="notif-header">Notificaciones</div>
-  <div class="notif-item notif-unread">
-    <div class="notif-avatar" style="background:linear-gradient(135deg,#e91e63,#c2185b)">
-      AM<div class="notif-dot"></div>
-    </div>
-    <div class="notif-text"><strong>Ana M.</strong><br><span>le dio me gusta a tu foto</span></div>
-    <div class="notif-time">2m</div>
-  </div>
-  <div class="notif-item notif-unread">
-    <div class="notif-avatar" style="background:linear-gradient(135deg,#ff9800,#e65100)">
-      CR<div class="notif-dot"></div>
-    </div>
-    <div class="notif-text"><strong>Carlos R.</strong><br><span>comentó tu publicación</span></div>
-    <div class="notif-time">15m</div>
-  </div>
-  <div class="notif-item notif-unread">
-    <div class="notif-avatar" style="background:linear-gradient(135deg,#4caf50,#1b5e20)">
-      LG<div class="notif-dot"></div>
-    </div>
-    <div class="notif-text"><strong>Luis G.</strong><br><span>te envió una solicitud de amistad</span></div>
-    <div class="notif-time">1h</div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-avatar" style="background:linear-gradient(135deg,#9c27b0,#4a148c)">MP</div>
-    <div class="notif-text"><strong>María P.</strong><br><span>compartió tu publicación</span></div>
-    <div class="notif-time">3h</div>
-  </div>
-</div>
-
-<!-- LAYOUT -->
-<div class="layout">
-
+<div class="main-layout">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <nav class="sidebar-nav">
-      <a href="feed.html"><span class="icon">🏠</span> Inicio</a>
-      <a href="#"><span class="icon">📺</span> Videos</a>
-      <a href="amigos.html"><span class="icon">👥</span> Amigos</a>
-      <a href="mensajes.html"><span class="icon">💬</span> Mensajes</a>
-      <div class="sidebar-divider"></div>
-      <a href="perfil.html"><span class="icon">👤</span> Mi Perfil</a>
-      <a href="#"><span class="icon">🔖</span> Guardados</a>
-      <a href="#"><span class="icon">⚙️</span> Configuración</a>
-    </nav>
+    <div class="profile-card">
+      <div class="s-avatar" id="sidebar-avatar">?</div>
+      <div class="profile-name" id="sidebar-name">Cargando...</div>
+      <div class="profile-email" id="sidebar-email"></div>
+    </div>
+    <div>
+      <div class="sidebar-title">Menú</div>
+      <div class="nav-item" onclick="window.location.href='feed.html'">🏠 Inicio</div>
+      <div class="nav-item" onclick="window.location.href='perfil.html'">👤 Mi perfil</div>
+      <div class="nav-item" onclick="window.location.href='amigos.html'">👥 Amigos</div>
+      <div class="nav-item active">💬 Mensajes</div>
+    </div>
   </aside>
 
-  <!-- MAIN -->
-  <main class="main">
+  <!-- CHAT AREA -->
+  <div class="chat-area">
 
-    <!-- CONVERSATIONS LIST -->
+    <!-- LISTA DE CONVERSACIONES -->
     <div class="conv-list">
       <div class="conv-list-header">
-        <h2>Mensajes</h2>
-        <input class="conv-search" type="text" placeholder="🔍  Buscar conversación…" id="convSearchInput" oninput="filterConvs(this.value)" />
+        <h2>💬 Mensajes</h2>
+        <input class="conv-search" type="text" placeholder="Buscar amigo..." id="conv-search" oninput="filterFriends(this.value)" />
       </div>
-      <div class="conv-tabs">
-        <button class="conv-tab active" onclick="setTab(this,'todas')">Todas</button>
-        <button class="conv-tab" onclick="setTab(this,'no-leidas')">No leídas</button>
-        <button class="conv-tab" onclick="setTab(this,'grupos')">Grupos</button>
+      <div class="conv-items" id="conv-items">
+        <div class="conv-empty">Cargando amigos...</div>
       </div>
-      <div class="conv-items" id="convList"></div>
     </div>
 
-    <!-- CHAT WINDOW -->
-    <div class="chat-window" id="chatWindow">
-      <div class="chat-empty" id="emptyState">
+    <!-- VENTANA DE CHAT -->
+    <div class="chat-window" id="chat-window">
+      <div class="chat-empty">
         <div class="empty-icon">💬</div>
         <h3>Tus mensajes</h3>
-        <p>Selecciona una conversación o empieza una nueva con tus amigos.</p>
-        <button onclick="openConv(0)">Nueva conversación</button>
+        <p>Selecciona un amigo para empezar a chatear.</p>
       </div>
     </div>
 
-  </main>
+  </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const _supabase = window.supabase.createClient(
-  'https://xdhvztdhjotzjwwrwijx.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
-);
-const ME = { name: 'Tú', initials: 'TU', color: '#1877f2' };
+  const _supabase = window.supabase.createClient(
+    'https://xdhvztdhjotzjwwrwijx.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
+  )
 
-const conversations = [
-  {
-    id: 0,
-    name: 'Ana Martínez',
-    initials: 'AM',
-    color: 'linear-gradient(135deg,#e91e63,#c2185b)',
-    online: true,
-    unread: 2,
-    lastMsg: '¡Nos vemos mañana entonces! 😊',
-    lastTime: '2m',
-    messages: [
-      { from: 'other', text: 'Hola! ¿Cómo estás?', time: '10:00 AM' },
-      { from: 'me', text: '¡Bien! ¿Y tú qué cuentas?', time: '10:02 AM' },
-      { from: 'other', text: 'Todo bien por acá, ¿tienes planes para el fin de semana?', time: '10:05 AM' },
-      { from: 'me', text: 'Estaba pensando ir al parque, ¿te apuntas?', time: '10:06 AM' },
-      { from: 'other', text: '¡Claro que sí! A qué hora quedamos?', time: '10:08 AM' },
-      { from: 'me', text: '¿Las 10 AM te viene bien?', time: '10:09 AM' },
-      { from: 'other', text: '¡Nos vemos mañana entonces! 😊', time: '10:11 AM' },
-    ]
-  },
-  {
-    id: 1,
-    name: 'Carlos Rodríguez',
-    initials: 'CR',
-    color: 'linear-gradient(135deg,#ff9800,#e65100)',
-    online: false,
-    unread: 0,
-    lastMsg: 'Listo, te mando el archivo después',
-    lastTime: '1h',
-    messages: [
-      { from: 'other', text: '¿Terminaste el proyecto?', time: 'Ayer 3:00 PM' },
-      { from: 'me', text: 'Casi, me falta la última parte', time: 'Ayer 3:05 PM' },
-      { from: 'other', text: 'Avísame si necesitas ayuda', time: 'Ayer 3:07 PM' },
-      { from: 'me', text: '¿Me puedes mandar los archivos de referencia?', time: 'Ayer 3:10 PM' },
-      { from: 'other', text: 'Listo, te mando el archivo después', time: 'Ayer 3:12 PM' },
-    ]
-  },
-  {
-    id: 2,
-    name: 'Luis González',
-    initials: 'LG',
-    color: 'linear-gradient(135deg,#4caf50,#1b5e20)',
-    online: true,
-    unread: 1,
-    lastMsg: '¿Viste el partido anoche?',
-    lastTime: '3h',
-    messages: [
-      { from: 'other', text: '¡Qué golazo el de anoche!', time: '8:00 AM' },
-      { from: 'me', text: '¡Increíble! No me lo esperaba', time: '8:15 AM' },
-      { from: 'other', text: '¿Viste el partido anoche?', time: '9:30 AM' },
-    ]
-  },
-  {
-    id: 3,
-    name: 'María Pérez',
-    initials: 'MP',
-    color: 'linear-gradient(135deg,#9c27b0,#4a148c)',
-    online: false,
-    unread: 0,
-    lastMsg: 'Muchas gracias! ❤️',
-    lastTime: 'Ayer',
-    messages: [
-      { from: 'me', text: 'Feliz cumpleaños María! 🎂', time: 'Ayer 12:00 PM' },
-      { from: 'other', text: 'Muchas gracias! ❤️', time: 'Ayer 12:30 PM' },
-    ]
-  },
-  {
-    id: 4,
-    name: 'Pedro Sánchez',
-    initials: 'PS',
-    color: 'linear-gradient(135deg,#00bcd4,#006064)',
-    online: false,
-    unread: 0,
-    lastMsg: 'Ok, hablamos la próxima semana',
-    lastTime: 'Lun',
-    messages: [
-      { from: 'other', text: '¿Cuándo nos reunimos para el proyecto?', time: 'Lun 2:00 PM' },
-      { from: 'me', text: 'Esta semana estoy muy ocupado', time: 'Lun 2:30 PM' },
-      { from: 'other', text: 'Ok, hablamos la próxima semana', time: 'Lun 2:31 PM' },
-    ]
-  },
-];
+  let currentUser = null
+  let currentProfile = null
+  let allFriends = []
+  let activeFriendId = null
+  let realtimeChannel = null
 
-let activeConvId = null;
-let currentTab = 'todas';
+  async function init() {
+    const { data: { session } } = await _supabase.auth.getSession()
+    if (!session) return window.location.href = 'index.html'
+    currentUser = session.user
 
-function renderConvList(list) {
-  const el = document.getElementById('convList');
-  el.innerHTML = '';
-  list.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'conv-item' + (c.unread ? ' unread' : '') + (c.id === activeConvId ? ' active' : '');
-    div.onclick = () => openConv(c.id);
-    div.innerHTML = `
-      <div class="conv-avatar" style="background:${c.color}">
-        ${c.initials}
-        ${c.online ? '<div class="online-dot"></div>' : ''}
-      </div>
-      <div class="conv-info">
-        <div class="conv-name">${c.name}</div>
-        <div class="conv-preview">${c.lastMsg}</div>
-      </div>
-      <div class="conv-meta">
-        <div class="conv-time">${c.lastTime}</div>
-        ${c.unread ? `<div class="conv-badge">${c.unread}</div>` : ''}
-      </div>
-    `;
-    el.appendChild(div);
-  });
-}
+    const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single()
+    currentProfile = profile
+    const name = profile?.full_name || currentUser.email
+    document.getElementById('navbar-name').textContent = name
+    document.getElementById('sidebar-name').textContent = name
+    document.getElementById('sidebar-email').textContent = currentUser.email
 
-function getFilteredList() {
-  let list = conversations;
-  if (currentTab === 'no-leidas') list = list.filter(c => c.unread > 0);
-  return list;
-}
+    const av = document.getElementById('sidebar-avatar')
+    if (profile?.avatar_url) av.innerHTML = `<img src="${profile.avatar_url}" />`
+    else av.textContent = name.charAt(0).toUpperCase()
 
-function filterConvs(q) {
-  const base = getFilteredList();
-  const filtered = q ? base.filter(c => c.name.toLowerCase().includes(q.toLowerCase())) : base;
-  renderConvList(filtered);
-}
+    await loadFriends()
+    await loadNotifications()
 
-function setTab(btn, tab) {
-  currentTab = tab;
-  document.querySelectorAll('.conv-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderConvList(getFilteredList());
-}
-
-function openConv(id) {
-  activeConvId = id;
-  const conv = conversations.find(c => c.id === id);
-  conv.unread = 0;
-  renderConvList(getFilteredList());
-
-  const win = document.getElementById('chatWindow');
-  win.innerHTML = `
-    <div class="chat-header">
-      <div class="chat-header-avatar" style="background:${conv.color}">${conv.initials}${conv.online ? '<div class="online-dot"></div>' : ''}</div>
-      <div class="chat-header-info">
-        <h3>${conv.name}</h3>
-        <span>${conv.online ? '● En línea' : 'Desconectado'}</span>
-      </div>
-      <div class="chat-header-actions">
-        <button class="chat-action-btn" title="Llamada">📞</button>
-        <button class="chat-action-btn" title="Video">📹</button>
-        <button class="chat-action-btn" title="Info">ℹ️</button>
-      </div>
-    </div>
-    <div class="messages-area" id="messagesArea"></div>
-    <div class="chat-input-area">
-      <button class="input-action-btn" title="Adjuntar">📎</button>
-      <button class="input-action-btn" title="Imagen">🖼️</button>
-      <textarea class="chat-input" id="chatInput" placeholder="Escribe un mensaje…" rows="1"
-        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="input-action-btn" title="Emoji">😊</button>
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
-    </div>
-  `;
-  renderMessages(conv);
-  document.getElementById('chatInput').focus();
-}
-
-function renderMessages(conv) {
-  const area = document.getElementById('messagesArea');
-  area.innerHTML = `<div class="day-separator">Hoy</div>`;
-
-  let lastFrom = null;
-  conv.messages.forEach((msg, i) => {
-    const isMe = msg.from === 'me';
-    const sameGroup = lastFrom === msg.from;
-    lastFrom = msg.from;
-
-    if (!sameGroup) {
-      const group = document.createElement('div');
-      group.className = 'msg-group ' + (isMe ? 'me' : 'other');
-      if (!isMe) {
-        group.innerHTML = `
-          <div class="msg-group-header">
-            <div class="msg-group-avatar" style="background:${conv.color}">${conv.initials}</div>
-            <span class="msg-group-name">${conv.name}</span>
-          </div>
-        `;
+    document.addEventListener('click', (e) => {
+      const wrap = document.querySelector('.notif-bell-wrap')
+      if (!wrap || !wrap.contains(e.target)) {
+        document.getElementById('notif-panel').classList.remove('open')
       }
-      area.appendChild(group);
+    })
+  }
+
+  // ─── AMIGOS ───────────────────────────────────────────────────
+  async function loadFriends() {
+    const { data: friendships } = await _supabase
+      .from('friendships')
+      .select('*')
+      .eq('status', 'accepted')
+      .or(`requester_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+
+    if (!friendships || friendships.length === 0) {
+      document.getElementById('conv-items').innerHTML = '<div class="conv-empty">No tienes amigos aún.<br>¡Agrégalos en la sección Amigos!</div>'
+      return
     }
 
-    const lastGroup = area.lastElementChild;
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = msg.text;
-    lastGroup.appendChild(bubble);
+    const friendIds = friendships.map(f => f.requester_id === currentUser.id ? f.receiver_id : f.requester_id)
+    const { data: profiles } = await _supabase.from('profiles').select('*').in('id', friendIds)
+    allFriends = profiles || []
 
-    if (i === conv.messages.length - 1) {
-      const t = document.createElement('div');
-      t.className = 'bubble-time';
-      t.textContent = msg.time + (isMe ? ' · Visto' : '');
-      lastGroup.appendChild(t);
+    // Para cada amigo, cargar el último mensaje
+    const { data: lastMsgs } = await _supabase
+      .from('messages')
+      .select('*')
+      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+      .order('created_at', { ascending: false })
+
+    renderFriendList(allFriends, lastMsgs || [])
+  }
+
+  function renderFriendList(friends, messages) {
+    const container = document.getElementById('conv-items')
+    if (!friends.length) {
+      container.innerHTML = '<div class="conv-empty">No tienes amigos aún.</div>'
+      return
     }
-  });
 
-  area.scrollTop = area.scrollHeight;
-}
+    // Contar no leídos por amigo
+    const unreadMap = {}
+    messages.forEach(m => {
+      if (m.receiver_id === currentUser.id && !m.read) {
+        unreadMap[m.sender_id] = (unreadMap[m.sender_id] || 0) + 1
+      }
+    })
 
-function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text || activeConvId === null) return;
+    // Último mensaje por amigo
+    const lastMsgMap = {}
+    messages.forEach(m => {
+      const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id
+      if (!lastMsgMap[otherId]) lastMsgMap[otherId] = m
+    })
 
-  const conv = conversations.find(c => c.id === activeConvId);
-  const now = new Date();
-  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-
-  conv.messages.push({ from: 'me', text, time: timeStr + ' PM' });
-  conv.lastMsg = text;
-  conv.lastTime = 'Ahora';
-
-  input.value = '';
-  input.style.height = 'auto';
-
-  renderMessages(conv);
-  renderConvList(getFilteredList());
-
-  // Simular respuesta
-  if (conv.online) {
-    setTimeout(() => {
-      const replies = [
-        '¡Genial! 😊', 'Entendido, gracias!', '¡Claro que sí!',
-        'Perfecto, te aviso luego', '¡Me parece bien!', 'Ok 👍'
-      ];
-      const reply = replies[Math.floor(Math.random() * replies.length)];
-      const replyTime = new Date();
-      const replyStr = replyTime.getHours().toString().padStart(2,'0') + ':' + replyTime.getMinutes().toString().padStart(2,'0');
-      conv.messages.push({ from: 'other', text: reply, time: replyStr + ' PM' });
-      conv.lastMsg = reply;
-      conv.lastTime = 'Ahora';
-      renderMessages(conv);
-      renderConvList(getFilteredList());
-    }, 1200 + Math.random() * 800);
+    container.innerHTML = friends.map(f => {
+      const avatarHTML = f.avatar_url ? `<img src="${f.avatar_url}" />` : f.full_name.charAt(0).toUpperCase()
+      const lastMsg = lastMsgMap[f.id]
+      const preview = lastMsg ? (lastMsg.sender_id === currentUser.id ? `Tú: ${lastMsg.content}` : lastMsg.content) : 'Sin mensajes aún'
+      const time = lastMsg ? timeAgo(lastMsg.created_at) : ''
+      const unread = unreadMap[f.id] || 0
+      return `
+        <div class="conv-item ${f.id === activeFriendId ? 'active' : ''} ${unread ? 'unread' : ''}" onclick="openChat('${f.id}')">
+          <div class="conv-avatar">${avatarHTML}</div>
+          <div class="conv-info">
+            <div class="conv-name">${f.full_name}</div>
+            <div class="conv-preview">${preview}</div>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">${time}</div>
+            ${unread ? `<div class="conv-unread-badge">${unread}</div>` : ''}
+          </div>
+        </div>`
+    }).join('')
   }
-}
 
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+  function filterFriends(q) {
+    const filtered = q ? allFriends.filter(f => f.full_name.toLowerCase().includes(q.toLowerCase())) : allFriends
+    renderFriendList(filtered, [])
   }
-}
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
+  // ─── CHAT ─────────────────────────────────────────────────────
+  async function openChat(friendId) {
+    activeFriendId = friendId
+    const friend = allFriends.find(f => f.id === friendId)
+    if (!friend) return
 
-function toggleNotif() {
-  const panel = document.getElementById('notifPanel');
-  panel.classList.toggle('show');
-  if (panel.classList.contains('show')) {
-    document.getElementById('notifBadge').style.display = 'none';
+    // Actualizar lista
+    await loadFriends()
+
+    // Marcar mensajes como leídos
+    await _supabase.from('messages').update({ read: true })
+      .eq('sender_id', friendId).eq('receiver_id', currentUser.id)
+
+    // Renderizar ventana
+    const avatarHTML = friend.avatar_url ? `<img src="${friend.avatar_url}" />` : friend.full_name.charAt(0).toUpperCase()
+    document.getElementById('chat-window').innerHTML = `
+      <div class="chat-header">
+        <div class="chat-header-avatar">${avatarHTML}</div>
+        <div class="chat-header-name">${friend.full_name}</div>
+      </div>
+      <div class="messages-area" id="messages-area"></div>
+      <div class="typing-indicator" id="typing-indicator"></div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chat-input" placeholder="Escribe un mensaje..." rows="1"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+    `
+
+    await loadMessages(friendId)
+    subscribeToMessages(friendId)
+    document.getElementById('chat-input').focus()
   }
-}
 
-document.addEventListener('click', e => {
-  const panel = document.getElementById('notifPanel');
-  if (!panel.contains(e.target) && !e.target.closest('.nav-icon-btn')) {
-    panel.classList.remove('show');
+  async function loadMessages(friendId) {
+    const { data: messages } = await _supabase
+      .from('messages')
+      .select('*')
+      .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${currentUser.id})`)
+      .order('created_at', { ascending: true })
+
+    const area = document.getElementById('messages-area')
+    if (!area) return
+
+    if (!messages || messages.length === 0) {
+      area.innerHTML = '<div class="day-sep">No hay mensajes aún. ¡Di hola! 👋</div>'
+      return
+    }
+
+    area.innerHTML = ''
+    let lastDate = null
+
+    messages.forEach(msg => {
+      const msgDate = new Date(msg.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'long' })
+      if (msgDate !== lastDate) {
+        const sep = document.createElement('div')
+        sep.className = 'day-sep'
+        sep.textContent = msgDate
+        area.appendChild(sep)
+        lastDate = msgDate
+      }
+
+      const isMe = msg.sender_id === currentUser.id
+      const row = document.createElement('div')
+      row.className = `msg-row ${isMe ? 'me' : 'other'}`
+      row.dataset.id = msg.id
+      row.innerHTML = `
+        <div>
+          <div class="bubble">${escapeHtml(msg.content)}</div>
+          <div class="bubble-time">${formatTime(msg.created_at)}${isMe ? (msg.read ? ' · Visto' : '') : ''}</div>
+        </div>`
+      area.appendChild(row)
+    })
+
+    area.scrollTop = area.scrollHeight
   }
-});
 
-// Init
-async function init() {
-  const { data: { session } } = await _supabase.auth.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
-  renderConvList(conversations);
-}
-init();
+  function subscribeToMessages(friendId) {
+    // Cancelar suscripción anterior
+    if (realtimeChannel) realtimeChannel.unsubscribe()
+
+    realtimeChannel = _supabase
+      .channel(`messages-${currentUser.id}-${friendId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `receiver_id=eq.${currentUser.id}`
+      }, async (payload) => {
+        const msg = payload.new
+        // Solo mostrar si es de este chat
+        if (msg.sender_id !== friendId) {
+          // Actualizar lista lateral si es de otro amigo
+          await loadFriends()
+          return
+        }
+
+        // Marcar como leído inmediatamente
+        await _supabase.from('messages').update({ read: true }).eq('id', msg.id)
+
+        const area = document.getElementById('messages-area')
+        if (!area) return
+
+        const row = document.createElement('div')
+        row.className = 'msg-row other'
+        row.dataset.id = msg.id
+        row.innerHTML = `
+          <div>
+            <div class="bubble">${escapeHtml(msg.content)}</div>
+            <div class="bubble-time">${formatTime(msg.created_at)}</div>
+          </div>`
+        area.appendChild(row)
+        area.scrollTop = area.scrollHeight
+        await loadFriends()
+      })
+      .subscribe()
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chat-input')
+    if (!input) return
+    const content = input.value.trim()
+    if (!content || !activeFriendId) return
+
+    input.value = ''
+    input.style.height = 'auto'
+
+    const { data: msg, error } = await _supabase.from('messages').insert({
+      sender_id: currentUser.id,
+      receiver_id: activeFriendId,
+      content,
+      read: false
+    }).select().single()
+
+    if (error) { showToast('Error al enviar', 'error'); return }
+
+    // Mostrar mensaje enviado inmediatamente
+    const area = document.getElementById('messages-area')
+    if (area) {
+      const row = document.createElement('div')
+      row.className = 'msg-row me'
+      row.dataset.id = msg.id
+      row.innerHTML = `
+        <div>
+          <div class="bubble">${escapeHtml(content)}</div>
+          <div class="bubble-time">${formatTime(msg.created_at)}</div>
+        </div>`
+      area.appendChild(row)
+      area.scrollTop = area.scrollHeight
+    }
+
+    await loadFriends()
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+  }
+
+  // ─── NOTIFICACIONES ───────────────────────────────────────────
+  async function loadNotifications() {
+    const { data: notifs } = await _supabase
+      .from('notifications').select('*').eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false }).limit(30)
+
+    if (!notifs || notifs.length === 0) { updateBadge(0); return }
+
+    const fromIds = [...new Set(notifs.map(n => n.from_user_id).filter(Boolean))]
+    const { data: fromProfiles } = await _supabase.from('profiles').select('id, full_name').in('id', fromIds)
+    const fromMap = {}
+    fromProfiles?.forEach(p => fromMap[p.id] = p)
+
+    updateBadge(notifs.filter(n => !n.read).length)
+
+    document.getElementById('notif-list').innerHTML = notifs.map(n => {
+      const fromName = fromMap[n.from_user_id]?.full_name || 'Alguien'
+      let emoji = '🔔', action = 'interactuó contigo'
+      if (n.type === 'like') { emoji = '❤️'; action = 'le dio Me gusta a tu publicación' }
+      else if (n.type === 'comment') { emoji = '💬'; action = 'comentó tu publicación' }
+      else if (n.type === 'friend_request') { emoji = '👥'; action = 'te envió una solicitud de amistad' }
+      return `
+        <div class="notif-item ${n.read ? '' : 'unread'}" id="notif-${n.id}" onclick="markRead('${n.id}')">
+          <div class="notif-icon ${n.type}">${emoji}</div>
+          <div class="notif-text">
+            <p><strong>${fromName}</strong> ${action}</p>
+            <div class="notif-time">${timeAgo(n.created_at)}</div>
+          </div>
+          ${!n.read ? '<div class="notif-dot"></div>' : ''}
+        </div>`
+    }).join('')
+  }
+
+  function updateBadge(count) {
+    const badge = document.getElementById('notif-badge')
+    if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.classList.add('visible') }
+    else badge.classList.remove('visible')
+  }
+
+  async function markRead(notifId) {
+    await _supabase.from('notifications').update({ read: true }).eq('id', notifId)
+    const el = document.getElementById(`notif-${notifId}`)
+    if (el) { el.classList.remove('unread'); el.querySelector('.notif-dot')?.remove() }
+    updateBadge(document.querySelectorAll('.notif-item.unread').length)
+  }
+
+  async function markAllRead() {
+    await _supabase.from('notifications').update({ read: true }).eq('user_id', currentUser.id).eq('read', false)
+    document.querySelectorAll('.notif-item').forEach(el => { el.classList.remove('unread'); el.querySelector('.notif-dot')?.remove() })
+    updateBadge(0)
+  }
+
+  function toggleNotifPanel() {
+    const panel = document.getElementById('notif-panel')
+    panel.classList.toggle('open')
+    if (panel.classList.contains('open')) loadNotifications()
+  }
+
+  // ─── UTILS ────────────────────────────────────────────────────
+  function timeAgo(dateStr) {
+    const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+    if (diff < 60) return 'Ahora'
+    if (diff < 3600) return `${Math.floor(diff / 60)} min`
+    if (diff < 86400) return `${Math.floor(diff / 3600)} h`
+    return `${Math.floor(diff / 86400)} d`
+  }
+
+  function formatTime(dateStr) {
+    return new Date(dateStr).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+  }
+
+  let toastTimer = null
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast')
+    t.textContent = msg; t.className = 'toast ' + type
+    void t.offsetWidth; t.classList.add('show')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
+  }
+
+  async function logout() {
+    await _supabase.auth.signOut()
+    window.location.href = 'index.html'
+  }
+
+  init()
 </script>
 </body>
 </html>
