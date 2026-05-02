@@ -253,11 +253,11 @@
       loadNotifications()
 
       document.addEventListener('click', (e) => {
-        const wrap = document.querySelector('.notif-bell-wrap')
-        if (!wrap.contains(e.target)) {
-          document.getElementById('notif-panel').classList.remove('open')
-        }
-      })
+  const wrap = document.querySelector('.notif-bell-wrap')
+  if (!wrap || !wrap.contains(e.target)) {
+    document.getElementById('notif-panel').classList.remove('open')
+  }
+})
     }
 
     // ─── POSTS ────────────────────────────────────────────────────
@@ -346,7 +346,8 @@
         await _supabase.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId)
         document.getElementById(`like-btn-${postId}`).classList.remove('liked')
       } else {
-        await _supabase.from('likes').insert({ user_id: currentUser.id, post_id: postId })
+        const { error: likeError } = await _supabase.from('likes').insert({ user_id: currentUser.id, post_id: postId })
+        if (likeError) { alert('Error al dar Me gusta'); return; }
         document.getElementById(`like-btn-${postId}`).classList.add('liked')
         if (postOwnerId && postOwnerId !== currentUser.id) {
           await createNotification('like', postOwnerId, postId)
@@ -367,8 +368,9 @@
       const content = input.value.trim()
       if (!content) return
 
-      await _supabase.from('comments').insert({ user_id: currentUser.id, post_id: postId, content })
-      input.value = ''
+      const { error: commentError } = await _supabase.from('comments').insert({ user_id: currentUser.id, post_id: postId, content })
+if (commentError) { alert('Error al enviar comentario'); return; }
+input.value = ''
 
       const name = currentProfile?.full_name || 'Usuario'
       const initial = name.charAt(0).toUpperCase()

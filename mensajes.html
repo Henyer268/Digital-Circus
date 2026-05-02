@@ -616,9 +616,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// Init — verificar sesión
-const { data: { session } } = await _supabase.auth.getSession();
-if (!session) { window.location.href = 'index.html'; return; }
 // Init
 async function init() {
   const { data: { session } } = await _supabase.auth.getSession();
