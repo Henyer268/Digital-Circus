@@ -368,6 +368,8 @@
     }
 
     async function sendRequest(toUserId, btn) {
+      btn.disabled = true
+      btn.textContent = '⏳ Enviando...'
       const { error } = await _supabase.from('friendships').insert({
         requester_id: currentUser.id,
         receiver_id: toUserId,
