@@ -2,886 +2,513 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MiRed — Explorar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiRed — Feed</title>
   <style>
-    :root {
-      --bg: #0a0a0f;
-      --surface: #13131a;
-      --surface2: #1c1c26;
-      --border: rgba(255,255,255,0.07);
-      --text: #f0f0f8;
-      --muted: #7a7a9a;
-      --accent: #7c6fff;
-      --accent2: #ff6b9d;
-      --accent3: #00d4aa;
-      --accent4: #ffb347;
-      --grad: linear-gradient(135deg, #7c6fff, #ff6b9d);
-      --grad2: linear-gradient(135deg, #00d4aa, #7c6fff);
-      --grad3: linear-gradient(135deg, #ffb347, #ff6b9d);
-      --r: 16px;
-      --font-head: 'Syne', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f0f2f5; }
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px;
+      background: #0f3460; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
+    .navbar-logo { color: white; font-size: 1.4rem; font-weight: 700; }
+    .navbar-right { display: flex; align-items: center; gap: 12px; }
+    .navbar-user { color: white; font-size: 0.9rem; }
+    .btn-logout { background: #e94560; color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+    .btn-logout:hover { background: #c73652; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      min-height: 100vh;
-      display: flex;
+    /* CAMPANA */
+    .notif-bell-wrap { position: relative; }
+    .notif-bell {
+      background: rgba(255,255,255,0.15); border: none; color: white;
+      width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
+      font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
     }
-
-    /* ── Sidebar ── */
-    .sidebar {
-      width: 72px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 0;
-      gap: 8px;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
-    }
-    .logo {
-      width: 40px; height: 40px;
-      background: var(--grad);
-      border-radius: 12px;
+    .notif-bell:hover { background: rgba(255,255,255,0.25); }
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: #e94560; color: white; font-size: 0.68rem;
+      font-weight: 700; border-radius: 50%; width: 18px; height: 18px;
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-head);
-      font-weight: 800; font-size: 18px; color: #fff;
-      margin-bottom: 20px;
+      border: 2px solid #0f3460; display: none;
     }
-    .nav-item {
-      width: 48px; height: 48px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all .2s;
-      color: var(--muted);
-      position: relative;
-      text-decoration: none;
-    }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: rgba(124,111,255,.15); color: var(--accent); }
-    .nav-item svg { width: 22px; height: 22px; }
-    .nav-item .badge {
-      position: absolute; top: 6px; right: 6px;
-      width: 8px; height: 8px;
-      background: var(--accent2);
-      border-radius: 50%;
-      border: 2px solid var(--surface);
-    }
-    .sidebar-bottom { margin-top: auto; }
-    .avatar-nav {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--grad);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 14px; color: #fff;
-      cursor: pointer;
-    }
+    .notif-badge.visible { display: flex; }
 
-    /* ── Main layout ── */
-    .main {
-      margin-left: 72px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    /* ── Top bar ── */
-    .topbar {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(10,10,15,.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 28px;
-      display: flex; align-items: center; gap: 16px;
-    }
-    .topbar h1 {
-      font-family: var(--font-head);
-      font-size: 22px; font-weight: 800;
-      flex-shrink: 0;
-    }
-    .search-bar {
-      flex: 1; max-width: 480px;
-      position: relative;
-    }
-    .search-bar input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 10px 16px 10px 42px;
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 14px;
-      outline: none;
-      transition: border-color .2s;
-    }
-    .search-bar input:focus { border-color: var(--accent); }
-    .search-bar input::placeholder { color: var(--muted); }
-    .search-bar .icon {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-      color: var(--muted); display: flex;
-    }
-    .search-bar .icon svg { width: 16px; height: 16px; }
-    .filter-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 9px 16px;
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 13px;
-      cursor: pointer;
-      display: flex; align-items: center; gap: 6px;
-      transition: all .2s;
-    }
-    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .filter-btn.active { background: rgba(124,111,255,.15); border-color: var(--accent); color: var(--accent); }
-
-    /* ── Content ── */
-    .content {
-      padding: 24px 28px;
-      flex: 1;
-    }
-
-    /* ── Category pills ── */
-    .categories {
-      display: flex; gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 28px;
-      scrollbar-width: none;
-    }
-    .categories::-webkit-scrollbar { display: none; }
-    .cat-pill {
-      flex-shrink: 0;
-      padding: 8px 18px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      font-size: 13px;
-      font-family: var(--font-body);
-      cursor: pointer;
-      transition: all .2s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .cat-pill:hover { border-color: var(--accent); color: var(--text); }
-    .cat-pill.active {
-      background: var(--grad);
-      border-color: transparent;
-      color: #fff;
-    }
-    .cat-pill span { font-size: 15px; }
-
-    /* ── Section title ── */
-    .section-title {
-      font-family: var(--font-head);
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .section-title a {
-      font-family: var(--font-body);
-      font-size: 13px;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 400;
-    }
-
-    /* ── Trending cards (horizontal scroll) ── */
-    .trending-row {
-      display: flex; gap: 14px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 36px;
-      scrollbar-width: none;
-    }
-    .trending-row::-webkit-scrollbar { display: none; }
-    .trending-card {
-      flex-shrink: 0;
-      width: 160px;
-      border-radius: var(--r);
-      overflow: hidden;
-      cursor: pointer;
-      position: relative;
-      transition: transform .2s;
-    }
-    .trending-card:hover { transform: translateY(-4px); }
-    .trending-card .cover {
-      width: 100%; height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-    .trending-card .cover-bg {
-      width: 100%; height: 200px;
-      background-size: cover;
-      background-position: center;
-    }
-    .trending-card .overlay {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      background: linear-gradient(transparent, rgba(0,0,0,.85));
-      padding: 12px 10px 10px;
-    }
-    .trending-card .tag {
-      display: inline-block;
-      background: rgba(255,255,255,.15);
-      backdrop-filter: blur(6px);
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 10px;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-    .trending-card .title {
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.3;
-      color: #fff;
-    }
-    .trending-card .views {
-      font-size: 11px;
-      color: rgba(255,255,255,.6);
-      margin-top: 2px;
-    }
-    .trending-card .rank {
-      position: absolute;
-      top: 10px; left: 10px;
-      width: 26px; height: 26px;
-      background: var(--grad);
-      border-radius: 8px;
-      font-family: var(--font-head);
-      font-weight: 800; font-size: 13px;
-      color: #fff;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    /* ── Masonry grid ── */
-    .explore-grid {
-      columns: 3;
-      column-gap: 16px;
-      margin-bottom: 36px;
-    }
-    @media (max-width: 1100px) { .explore-grid { columns: 2; } }
-
-    .grid-card {
-      break-inside: avoid;
-      margin-bottom: 16px;
-      border-radius: var(--r);
-      overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: transform .2s, border-color .2s;
-      position: relative;
-    }
-    .grid-card:hover { transform: translateY(-3px); border-color: rgba(124,111,255,.4); }
-    .grid-card .img-wrap {
-      width: 100%;
-      overflow: hidden;
-    }
-    .grid-card .img-placeholder {
-      width: 100%;
-      display: block;
-    }
-    .grid-card .card-body {
-      padding: 12px 14px 14px;
-    }
-    .grid-card .card-user {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 8px;
-    }
-    .grid-card .user-av {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: #fff;
-      flex-shrink: 0;
-    }
-    .grid-card .user-name {
-      font-size: 13px; font-weight: 500;
-    }
-    .grid-card .user-handle {
-      font-size: 11px; color: var(--muted);
-    }
-    .grid-card .card-text {
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-    .grid-card .card-tags {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      margin-bottom: 10px;
-    }
-    .card-tag {
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-family: var(--font-body);
-    }
-    .grid-card .card-stats {
-      display: flex; gap: 14px;
-    }
-    .stat {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 12px; color: var(--muted);
-    }
-    .stat svg { width: 14px; height: 14px; }
-    .stat:hover { color: var(--accent2); cursor: pointer; }
-
-    /* ── People to follow ── */
-    .people-row {
-      display: flex; gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 36px;
-      scrollbar-width: none;
-    }
-    .people-row::-webkit-scrollbar { display: none; }
-    .person-card {
-      flex-shrink: 0;
-      width: 150px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 16px 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color .2s, transform .2s;
-    }
-    .person-card:hover { border-color: rgba(124,111,255,.4); transform: translateY(-3px); }
-    .person-card .p-av {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      margin: 0 auto 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; font-weight: 700; color: #fff;
-    }
-    .person-card .p-name {
-      font-size: 13px; font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .person-card .p-handle {
-      font-size: 11px; color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .person-card .p-followers {
-      font-size: 11px; color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .follow-btn {
-      width: 100%;
-      padding: 7px;
-      border-radius: 10px;
-      border: none;
-      background: var(--grad);
-      color: #fff;
-      font-size: 12px;
-      font-family: var(--font-body);
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
-    .follow-btn:hover { opacity: .85; }
-    .follow-btn.following {
-      background: var(--surface2);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    /* ── Toast ── */
-    .toast {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 20px;
-      font-size: 14px;
-      display: flex; align-items: center; gap: 8px;
-      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-      z-index: 999;
-      white-space: nowrap;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-
-    /* ── Liked overlay ── */
-    .liked-pop {
-      position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%,-50%) scale(0);
-      font-size: 80px;
-      pointer-events: none;
-      transition: transform .15s, opacity .3s;
-      opacity: 0;
-      z-index: 998;
-    }
-    .liked-pop.show {
-      transform: translate(-50%,-50%) scale(1);
-      opacity: 1;
-    }
-
-    /* ── Notification panel ── */
+    /* PANEL NOTIFICACIONES */
     .notif-panel {
-      position: fixed; top: 60px; right: 20px;
-      width: 320px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 16px;
-      z-index: 200;
-      display: none;
+      position: absolute; top: 48px; right: 0;
+      width: 340px; background: white; border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18); z-index: 200;
+      display: none; overflow: hidden;
     }
     .notif-panel.open { display: block; }
-    .notif-title { font-family: var(--font-head); font-weight: 700; font-size: 16px; margin-bottom: 14px; }
+    .notif-panel-header {
+      padding: 14px 16px; font-weight: 700; font-size: 0.95rem;
+      border-bottom: 1px solid #f0f2f5; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .notif-mark-all {
+      font-size: 0.8rem; color: #0f3460; cursor: pointer;
+      font-weight: 600; border: none; background: none;
+    }
+    .notif-mark-all:hover { color: #e94560; }
+    .notif-list { max-height: 380px; overflow-y: auto; }
     .notif-item {
-      display: flex; gap: 10px; align-items: flex-start;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px; border-bottom: 1px solid #f8f8f8;
+      cursor: pointer; transition: background 0.15s;
     }
-    .notif-item:last-child { border-bottom: none; }
-    .notif-av {
-      width: 36px; height: 36px; border-radius: 50%;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700; color: #fff;
+    .notif-item:hover { background: #f8f9ff; }
+    .notif-item.unread { background: #f0f4ff; }
+    .notif-item.unread:hover { background: #e8eeff; }
+    .notif-icon {
+      width: 36px; height: 36px; border-radius: 50%; background: #0f3460;
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
     }
-    .notif-text { font-size: 13px; line-height: 1.4; }
-    .notif-text strong { color: var(--text); }
-    .notif-text span { color: var(--muted); font-size: 11px; display: block; margin-top: 2px; }
+    .notif-icon.like { background: #e94560; font-size: 1rem; }
+    .notif-icon.comment { background: #0f3460; font-size: 1rem; }
+    .notif-icon.friend_request { background: #27ae60; font-size: 1rem; }
+    .notif-text { flex: 1; }
+    .notif-text strong { font-weight: 700; color: #1a1a2e; }
+    .notif-text p { font-size: 0.85rem; color: #444; margin-top: 1px; line-height: 1.4; }
+    .notif-time { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+    .notif-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #0f3460;
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .notif-empty { padding: 32px 16px; text-align: center; color: #aaa; font-size: 0.9rem; }
 
-    /* ── Search results overlay ── */
-    .search-results {
-      position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      display: none;
-      z-index: 300;
-    }
-    .search-bar:focus-within .search-results { display: block; }
-    .sr-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px;
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .sr-item:hover { background: var(--surface2); }
-    .sr-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-    .sr-name { font-size: 14px; }
-    .sr-sub { font-size: 12px; color: var(--muted); }
-
-    /* anim */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .content > * { animation: fadeUp .4s ease both; }
-    .content > *:nth-child(1) { animation-delay: .05s; }
-    .content > *:nth-child(2) { animation-delay: .1s; }
-    .content > *:nth-child(3) { animation-delay: .15s; }
-    .content > *:nth-child(4) { animation-delay: .2s; }
-    .content > *:nth-child(5) { animation-delay: .25s; }
+    /* LAYOUT */
+    .main-layout { max-width: 900px; margin: 0 auto; padding: 72px 16px 24px; display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+    .sidebar { display: flex; flex-direction: column; gap: 12px; }
+    .card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .profile-card { text-align: center; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: #0f3460; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: 700; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+    .profile-email { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .sidebar-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; color: #1a1a2e; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-radius: 8px; cursor: pointer; color: #444; font-size: 0.95rem; transition: background 0.2s; }
+    .nav-item:hover { background: #f0f2f5; }
+    .nav-item.active { background: #e8eeff; color: #0f3460; font-weight: 600; }
+    .feed { display: flex; flex-direction: column; gap: 16px; }
+    .create-post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .create-post-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .create-post-input { flex: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 10px 16px; font-size: 0.95rem; cursor: pointer; outline: none; color: #888; }
+    .create-post-actions { display: flex; gap: 8px; border-top: 1px solid #f0f2f5; padding-top: 12px; }
+    .action-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: #555; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
+    .action-btn:hover { background: #f0f2f5; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 500px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-title { font-size: 1.1rem; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; }
+    .modal textarea { width: 100%; border: 1.5px solid #ddd; border-radius: 10px; padding: 12px; font-size: 0.95rem; resize: none; outline: none; font-family: inherit; min-height: 120px; }
+    .modal textarea:focus { border-color: #0f3460; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+    .btn-cancel { padding: 9px 18px; border: none; background: #f0f2f5; border-radius: 8px; cursor: pointer; }
+    .btn-post { padding: 9px 18px; border: none; background: #0f3460; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .btn-post:hover { background: #e94560; }
+    .post { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .post-avatar { width: 42px; height: 42px; border-radius: 50%; background: #0f3460; color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden; flex-shrink: 0; }
+    .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .post-author { font-weight: 700; font-size: 0.95rem; }
+    .post-time { font-size: 0.78rem; color: #888; }
+    .post-content { font-size: 0.95rem; line-height: 1.5; color: #1a1a2e; margin-bottom: 12px; }
+    .post-stats { display: flex; gap: 16px; font-size: 0.82rem; color: #888; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f0f2f5; }
+    .post-actions { display: flex; gap: 8px; }
+    .post-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 8px; cursor: pointer; font-size: 0.88rem; color: #555; display: flex; align-items: center; justify-content: center; gap: 5px; transition: background 0.2s; }
+    .post-btn:hover { background: #f0f2f5; }
+    .post-btn.liked { color: #e94560; font-weight: 600; }
+    .comments-section { margin-top: 12px; border-top: 1px solid #f0f2f5; padding-top: 12px; display: none; }
+    .comments-section.open { display: block; }
+    .comment { display: flex; gap: 8px; margin-bottom: 10px; }
+    .comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: #0f3460; color: white; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .comment-bubble { background: #f0f2f5; border-radius: 12px; padding: 8px 12px; flex: 1; }
+    .comment-author { font-weight: 700; font-size: 0.82rem; }
+    .comment-text { font-size: 0.88rem; color: #333; margin-top: 2px; }
+    .comment-input-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+    .comment-input { flex: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 9px 14px; font-size: 0.88rem; outline: none; font-family: inherit; }
+    .comment-submit { background: #0f3460; color: white; border: none; border-radius: 20px; padding: 9px 16px; cursor: pointer; font-size: 0.85rem; }
+    .comment-submit:hover { background: #e94560; }
+    .empty-feed { text-align: center; color: #888; padding: 40px; }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="logo">M</div>
-  <a href="index.html" class="nav-item" title="Inicio">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-  </a>
-  <a href="explorar.html" class="nav-item active" title="Explorar">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-  </a>
-  <a href="stories.html" class="nav-item" title="Stories">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
-  </a>
-  <a href="mensajes.html" class="nav-item" title="Mensajes">
-    <div class="badge"></div>
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-  </a>
-  <a href="amigos.html" class="nav-item" title="Amigos">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-  </a>
-  <div class="sidebar-bottom">
-    <div class="nav-item" onclick="toggleNotif()" title="Notificaciones">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+  <nav class="navbar">
+    <div class="navbar-logo">🌐 MiRed</div>
+    <div class="navbar-right">
+      <span class="navbar-user" id="navbar-name">Cargando...</span>
+
+      <!-- CAMPANITA -->
+      <div class="notif-bell-wrap">
+        <button class="notif-bell" onclick="toggleNotifPanel()" title="Notificaciones">🔔</button>
+        <div class="notif-badge" id="notif-badge">0</div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-panel-header">
+            <span>Notificaciones</span>
+            <button class="notif-mark-all" onclick="markAllRead()">Marcar todo como leído</button>
+          </div>
+          <div class="notif-list" id="notif-list">
+            <div class="notif-empty">Sin notificaciones aún</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
     </div>
-    <a href="perfil.html" class="nav-item" style="margin-top:8px;">
-      <div class="avatar-nav">H</div>
-    </a>
+  </nav>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="card profile-card">
+        <div class="avatar" id="sidebar-avatar">?</div>
+        <div class="profile-name" id="sidebar-name">Cargando...</div>
+        <div class="profile-email" id="sidebar-email"></div>
+      </div>
+      <div class="card">
+        <div class="sidebar-title">Menú</div>
+        <div class="nav-item active" onclick="window.location.href='feed.html'">🏠 Inicio</div>
+        <div class="nav-item" onclick="window.location.href='perfil.html'">👤 Mi perfil</div>
+        <div class="nav-item" onclick="window.location.href='amigos.html'">👥 Amigos</div>
+        <div class="nav-item" onclick="window.location.href='mensajes.html'">💬 Mensajes</div>
+      </div>
+    </aside>
+
+    <main class="feed">
+      <div class="create-post">
+        <div class="create-post-top">
+          <div class="avatar" id="post-avatar" style="width:42px;height:42px;font-size:1rem;">?</div>
+          <input class="create-post-input" placeholder="¿Qué estás pensando?" readonly onclick="openModal()" />
+        </div>
+        <div class="create-post-actions">
+          <button class="action-btn" onclick="openModal()">📷 Foto</button>
+          <button class="action-btn" onclick="openModal()">😊 Sentimiento</button>
+          <button class="action-btn" onclick="openModal()">📍 Lugar</button>
+        </div>
+      </div>
+      <div id="posts-container">
+        <div class="empty-feed">Cargando publicaciones...</div>
+      </div>
+    </main>
   </div>
-</aside>
 
-<!-- NOTIFICATION PANEL -->
-<div class="notif-panel" id="notifPanel">
-  <div class="notif-title">Notificaciones</div>
-  <div class="notif-item">
-    <div class="notif-av" style="background:linear-gradient(135deg,#7c6fff,#ff6b9d)">L</div>
-    <div class="notif-text"><strong>Laura M.</strong> le dio like a tu foto.<span>hace 2 min</span></div>
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Crear publicación</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <textarea id="post-text" placeholder="¿Qué estás pensando?"></textarea>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-post" onclick="submitPost()">Publicar</button>
+      </div>
+    </div>
   </div>
-  <div class="notif-item">
-    <div class="notif-av" style="background:linear-gradient(135deg,#00d4aa,#7c6fff)">C</div>
-    <div class="notif-text"><strong>Carlos R.</strong> empezó a seguirte.<span>hace 15 min</span></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-av" style="background:linear-gradient(135deg,#ffb347,#ff6b9d)">A</div>
-    <div class="notif-text"><strong>Ana S.</strong> comentó en tu post.<span>hace 1 h</span></div>
-  </div>
-</div>
 
-<!-- MAIN -->
-<main class="main">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const _supabase = window.supabase.createClient(
+      'https://xdhvztdhjotzjwwrwijx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaHZ6dGRoam90emp3d3J3aWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1OTU3NjQsImV4cCI6MjA5MzE3MTc2NH0.QkHBsglfL6g6WcXXORDGHX26MUzAhFERX0_9M9cGpQI'
+    )
 
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <h1>Explorar</h1>
-    <div class="search-bar">
-      <span class="icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-      <input type="text" placeholder="Buscar personas, temas, lugares…" id="searchInput" autocomplete="off" />
-      <div class="search-results">
-        <div class="sr-item"><div class="sr-icon" style="background:rgba(124,111,255,.15)">👤</div><div><div class="sr-name">María López</div><div class="sr-sub">@marialopez · 2.4k seguidores</div></div></div>
-        <div class="sr-item"><div class="sr-icon" style="background:rgba(0,212,170,.15)">🎨</div><div><div class="sr-name">#diseño</div><div class="sr-sub">12,400 posts esta semana</div></div></div>
-        <div class="sr-item"><div class="sr-icon" style="background:rgba(255,107,157,.15)">🎵</div><div><div class="sr-name">#música</div><div class="sr-sub">8,900 posts esta semana</div></div></div>
-        <div class="sr-item"><div class="sr-icon" style="background:rgba(255,179,71,.15)">🏙️</div><div><div class="sr-name">Barranquilla</div><div class="sr-sub">Lugar · Colombia</div></div></div>
-      </div>
-    </div>
-    <button class="filter-btn" id="filterBtn" onclick="toggleFilter()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-      Filtros
-    </button>
-  </header>
+    let currentUser = null
+    let currentProfile = null
+    let postsOwnerMap = {}
 
-  <!-- CONTENT -->
-  <div class="content">
+    async function init() {
+      const { data: { session } } = await _supabase.auth.getSession()
+      if (!session) return window.location.href = 'index.html'
+      currentUser = session.user
 
-    <!-- Categories -->
-    <div class="categories">
-      <div class="cat-pill active" onclick="setCategory(this)"><span>✨</span> Para ti</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>🔥</span> Tendencias</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>🎨</span> Arte</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>🎵</span> Música</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>🎮</span> Gaming</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>📸</span> Fotografía</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>🍕</span> Comida</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>✈️</span> Viajes</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>💻</span> Tech</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>🏋️</span> Fitness</div>
-      <div class="cat-pill" onclick="setCategory(this)"><span>📚</span> Educación</div>
-    </div>
+      const { data: profile } = await _supabase
+        .from('profiles').select('*').eq('id', currentUser.id).single()
 
-    <!-- Trending -->
-    <div class="section-title">🔥 Trending ahora <a href="#">Ver todo</a></div>
-    <div class="trending-row">
-      <div class="trending-card" onclick="openPost()">
-        <div class="cover-bg" style="background:linear-gradient(135deg,#1a0533,#7c6fff,#ff6b9d);height:200px;"></div>
-        <div class="rank">1</div>
-        <div class="overlay">
-          <div class="tag">Arte</div>
-          <div class="title">Nuevas obras de arte digital</div>
-          <div class="views">24.3k vistas</div>
-        </div>
-      </div>
-      <div class="trending-card" onclick="openPost()">
-        <div class="cover-bg" style="background:linear-gradient(135deg,#003322,#00d4aa,#7c6fff);height:200px;"></div>
-        <div class="rank">2</div>
-        <div class="overlay">
-          <div class="tag">Tech</div>
-          <div class="title">IA y el futuro del diseño</div>
-          <div class="views">19.1k vistas</div>
-        </div>
-      </div>
-      <div class="trending-card" onclick="openPost()">
-        <div class="cover-bg" style="background:linear-gradient(135deg,#330022,#ff6b9d,#ffb347);height:200px;"></div>
-        <div class="rank">3</div>
-        <div class="overlay">
-          <div class="tag">Música</div>
-          <div class="title">Nuevos lanzamientos del mes</div>
-          <div class="views">15.8k vistas</div>
-        </div>
-      </div>
-      <div class="trending-card" onclick="openPost()">
-        <div class="cover-bg" style="background:linear-gradient(135deg,#003344,#00aaff,#00d4aa);height:200px;"></div>
-        <div class="rank">4</div>
-        <div class="overlay">
-          <div class="tag">Viajes</div>
-          <div class="title">Destinos 2025 imperdibles</div>
-          <div class="views">12.2k vistas</div>
-        </div>
-      </div>
-      <div class="trending-card" onclick="openPost()">
-        <div class="cover-bg" style="background:linear-gradient(135deg,#222200,#ffb347,#ff6b9d);height:200px;"></div>
-        <div class="rank">5</div>
-        <div class="overlay">
-          <div class="tag">Comida</div>
-          <div class="title">Recetas virales esta semana</div>
-          <div class="views">10.5k vistas</div>
-        </div>
-      </div>
-    </div>
+      currentProfile = profile
+      const name = profile?.full_name || currentUser.email
+      const initial = name.charAt(0).toUpperCase()
 
-    <!-- Masonry grid -->
-    <div class="section-title">🌐 Descubrir <a href="#">Más</a></div>
-    <div class="explore-grid" id="exploreGrid">
+      document.getElementById('navbar-name').textContent = name
+      document.getElementById('sidebar-name').textContent = name
+      document.getElementById('sidebar-email').textContent = currentUser.email
 
-      <!-- Card 1 -->
-      <div class="grid-card">
-        <div class="img-wrap">
-          <div style="background:linear-gradient(135deg,#0d0033,#7c6fff 60%,#00d4aa);height:180px;"></div>
-        </div>
-        <div class="card-body">
-          <div class="card-user">
-            <div class="user-av" style="background:linear-gradient(135deg,#7c6fff,#ff6b9d)">M</div>
-            <div><div class="user-name">María Jiménez</div><div class="user-handle">@marij</div></div>
-          </div>
-          <div class="card-text">Acabo de terminar este proyecto de identidad visual para una startup 🎨 ¿Qué les parece la paleta?</div>
-          <div class="card-tags">
-            <span class="card-tag" style="background:rgba(124,111,255,.15);color:#a89fff">#diseño</span>
-            <span class="card-tag" style="background:rgba(0,212,170,.15);color:#00d4aa">#branding</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat" onclick="likePost(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>347</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>42</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>18</div>
-          </div>
-        </div>
-      </div>
+      if (profile?.avatar_url) {
+        document.getElementById('sidebar-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar" />`
+        document.getElementById('post-avatar').innerHTML = `<img src="${profile.avatar_url}" alt="avatar" />`
+      } else {
+        document.getElementById('sidebar-avatar').textContent = initial
+        document.getElementById('post-avatar').textContent = initial
+      }
 
-      <!-- Card 2 -->
-      <div class="grid-card">
-        <div class="card-body" style="padding-top:16px">
-          <div class="card-user">
-            <div class="user-av" style="background:linear-gradient(135deg,#00d4aa,#7c6fff)">C</div>
-            <div><div class="user-name">Carlos Rueda</div><div class="user-handle">@carlosdev</div></div>
-          </div>
-          <div class="card-text">🚀 Después de 6 meses de trabajo lanzamos nuestra app. Hecha con React + Supabase. ¡Gracias a todos los que creyeron en esto desde el inicio!</div>
-          <div class="card-tags">
-            <span class="card-tag" style="background:rgba(0,212,170,.15);color:#00d4aa">#webdev</span>
-            <span class="card-tag" style="background:rgba(124,111,255,.15);color:#a89fff">#react</span>
-            <span class="card-tag" style="background:rgba(255,179,71,.15);color:#ffb347">#launch</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat" onclick="likePost(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>892</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>134</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>67</div>
-          </div>
-        </div>
-      </div>
+      loadPosts()
+      loadNotifications()
 
-      <!-- Card 3 -->
-      <div class="grid-card">
-        <div class="img-wrap">
-          <div style="background:linear-gradient(160deg,#330011,#ff6b9d,#ffb347);height:240px;"></div>
-        </div>
-        <div class="card-body">
-          <div class="card-user">
-            <div class="user-av" style="background:linear-gradient(135deg,#ff6b9d,#ffb347)">S</div>
-            <div><div class="user-name">Sofía Paredes</div><div class="user-handle">@sofiaart</div></div>
-          </div>
-          <div class="card-text">Serie nueva: "Noche y Ciudad" 🌆 — 12 ilustraciones sobre el caos urbano.</div>
-          <div class="card-tags">
-            <span class="card-tag" style="background:rgba(255,107,157,.15);color:#ff6b9d">#ilustración</span>
-            <span class="card-tag" style="background:rgba(255,179,71,.15);color:#ffb347">#arte</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat" onclick="likePost(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>1.2k</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>89</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>203</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="grid-card">
-        <div class="card-body" style="padding-top:16px">
-          <div class="card-user">
-            <div class="user-av" style="background:linear-gradient(135deg,#ffb347,#ff6b9d)">J</div>
-            <div><div class="user-name">Javier Torres</div><div class="user-handle">@javichef</div></div>
-          </div>
-          <div class="card-text">🍜 Receta de ramen casero que tardé 3 años en perfeccionar. Les juro que vale cada minuto. Hilo ↓</div>
-          <div class="card-tags">
-            <span class="card-tag" style="background:rgba(255,179,71,.15);color:#ffb347">#cocina</span>
-            <span class="card-tag" style="background:rgba(255,107,157,.15);color:#ff6b9d">#foodie</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat" onclick="likePost(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>445</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>77</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>32</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 5 -->
-      <div class="grid-card">
-        <div class="img-wrap">
-          <div style="background:linear-gradient(135deg,#001133,#0066ff,#00d4aa);height:150px;"></div>
-        </div>
-        <div class="card-body">
-          <div class="card-user">
-            <div class="user-av" style="background:linear-gradient(135deg,#0066ff,#00d4aa)">A</div>
-            <div><div class="user-name">Ana Gómez</div><div class="user-handle">@anatravel</div></div>
-          </div>
-          <div class="card-text">Semana en Cartagena 🌊 Totalmente impresionante. Thread con fotos y recomendaciones.</div>
-          <div class="card-tags">
-            <span class="card-tag" style="background:rgba(0,102,255,.15);color:#5599ff">#viajes</span>
-            <span class="card-tag" style="background:rgba(0,212,170,.15);color:#00d4aa">#colombia</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat" onclick="likePost(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>620</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>58</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>44</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 6 -->
-      <div class="grid-card">
-        <div class="card-body" style="padding-top:16px">
-          <div class="card-user">
-            <div class="user-av" style="background:linear-gradient(135deg,#7c6fff,#00d4aa)">R</div>
-            <div><div class="user-name">Rodrigo Luna</div><div class="user-handle">@rodrigodev</div></div>
-          </div>
-          <div class="card-text">💡 Tip del día: si usas Supabase en proyectos personales, activa RLS desde el día 1. Te ahorra dolores de cabeza después. #webdev</div>
-          <div class="card-tags">
-            <span class="card-tag" style="background:rgba(124,111,255,.15);color:#a89fff">#supabase</span>
-            <span class="card-tag" style="background:rgba(0,212,170,.15);color:#00d4aa">#tips</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat" onclick="likePost(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>311</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>29</div>
-            <div class="stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>85</div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /explore-grid -->
-
-    <!-- People to follow -->
-    <div class="section-title">👥 Personas para seguir <a href="#">Ver más</a></div>
-    <div class="people-row">
-      <div class="person-card">
-        <div class="p-av" style="background:linear-gradient(135deg,#7c6fff,#ff6b9d)">L</div>
-        <div class="p-name">Laura Meza</div>
-        <div class="p-handle">@laurameza</div>
-        <div class="p-followers">4.2k seguidores</div>
-        <button class="follow-btn" onclick="toggleFollow(this)">Seguir</button>
-      </div>
-      <div class="person-card">
-        <div class="p-av" style="background:linear-gradient(135deg,#00d4aa,#7c6fff)">P</div>
-        <div class="p-name">Pablo Sierra</div>
-        <div class="p-handle">@pablodesign</div>
-        <div class="p-followers">12.8k seguidores</div>
-        <button class="follow-btn" onclick="toggleFollow(this)">Seguir</button>
-      </div>
-      <div class="person-card">
-        <div class="p-av" style="background:linear-gradient(135deg,#ff6b9d,#ffb347)">V</div>
-        <div class="p-name">Valentina Cruz</div>
-        <div class="p-handle">@valcruzmx</div>
-        <div class="p-followers">7.1k seguidores</div>
-        <button class="follow-btn" onclick="toggleFollow(this)">Seguir</button>
-      </div>
-      <div class="person-card">
-        <div class="p-av" style="background:linear-gradient(135deg,#ffb347,#ff6b9d)">D</div>
-        <div class="p-name">Diego Mora</div>
-        <div class="p-handle">@diegomora</div>
-        <div class="p-followers">3.5k seguidores</div>
-        <button class="follow-btn" onclick="toggleFollow(this)">Seguir</button>
-      </div>
-      <div class="person-card">
-        <div class="p-av" style="background:linear-gradient(135deg,#0066ff,#00d4aa)">N</div>
-        <div class="p-name">Natalia Ríos</div>
-        <div class="p-handle">@natrios</div>
-        <div class="p-followers">9.3k seguidores</div>
-        <button class="follow-btn" onclick="toggleFollow(this)">Seguir</button>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</main>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-<!-- Liked pop -->
-<div class="liked-pop" id="likedPop">❤️</div>
-
-<script>
-  function toggleNotif() {
-    document.getElementById('notifPanel').classList.toggle('open');
+      document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.notif-bell-wrap')
+  if (!wrap || !wrap.contains(e.target)) {
+    document.getElementById('notif-panel').classList.remove('open')
   }
-  document.addEventListener('click', e => {
-    const panel = document.getElementById('notifPanel');
-    if (!panel.contains(e.target) && !e.target.closest('.nav-item')) {
-      panel.classList.remove('open');
+})
     }
-  });
 
-  function setCategory(el) {
-    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
-    showToast('Mostrando: ' + el.textContent.trim());
-  }
+    // ─── POSTS ────────────────────────────────────────────────────
+    async function loadPosts() {
+      const { data: posts } = await _supabase
+        .from('posts').select('*').order('created_at', { ascending: false })
 
-  function toggleFilter() {
-    const btn = document.getElementById('filterBtn');
-    btn.classList.toggle('active');
-    showToast(btn.classList.contains('active') ? '✅ Filtros activados' : 'Filtros desactivados');
-  }
+      const { data: allLikes } = await _supabase.from('likes').select('*')
+      const { data: allComments } = await _supabase.from('comments').select('*')
 
-  function likePost(el) {
-    const svg = el.querySelector('svg');
-    const liked = svg.style.fill === 'rgb(255, 107, 157)';
-    svg.style.fill = liked ? 'none' : '#ff6b9d';
-    svg.style.stroke = liked ? 'currentColor' : '#ff6b9d';
-    if (!liked) {
-      const pop = document.getElementById('likedPop');
-      pop.classList.add('show');
-      setTimeout(() => pop.classList.remove('show'), 600);
+      const container = document.getElementById('posts-container')
+      if (!posts || posts.length === 0) {
+        container.innerHTML = '<div class="empty-feed">No hay publicaciones aún. ¡Sé el primero en publicar!</div>'
+        return
+      }
+
+      const userIds = [...new Set(posts.map(p => p.user_id))]
+      const { data: profiles } = await _supabase.from('profiles').select('*').in('id', userIds)
+      const profileMap = {}
+      profiles?.forEach(p => profileMap[p.id] = p)
+
+      posts.forEach(p => { postsOwnerMap[p.id] = p.user_id })
+
+      container.innerHTML = posts.map(post => {
+        const profile = profileMap[post.user_id]
+        const name = profile?.full_name || 'Usuario'
+        const initial = name.charAt(0).toUpperCase()
+        const time = new Date(post.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+        const postLikes = allLikes?.filter(l => l.post_id === post.id) || []
+        const postComments = allComments?.filter(c => c.post_id === post.id) || []
+        const userLiked = postLikes.some(l => l.user_id === currentUser.id)
+        const avatarHTML = profile?.avatar_url ? `<img src="${profile.avatar_url}" alt="${name}" />` : initial
+
+        const commentsHTML = postComments.map(c => {
+          const cp = profileMap[c.user_id]
+          const cn = cp?.full_name || 'Usuario'
+          return `
+            <div class="comment">
+              <div class="comment-avatar">${cn.charAt(0).toUpperCase()}</div>
+              <div class="comment-bubble">
+                <div class="comment-author">${cn}</div>
+                <div class="comment-text">${c.content}</div>
+              </div>
+            </div>`
+        }).join('')
+
+        return `
+          <div class="post" id="post-${post.id}">
+            <div class="post-header">
+              <div class="post-avatar">${avatarHTML}</div>
+              <div>
+                <div class="post-author">${name}</div>
+                <div class="post-time">${time}</div>
+              </div>
+            </div>
+            <div class="post-content">${post.content}</div>
+            <div class="post-stats">
+              <span id="like-count-${post.id}">${postLikes.length} Me gusta</span>
+              <span>${postComments.length} comentarios</span>
+            </div>
+            <div class="post-actions">
+              <button class="post-btn ${userLiked ? 'liked' : ''}" id="like-btn-${post.id}" onclick="toggleLike('${post.id}', '${post.user_id}')">
+                ❤️ Me gusta
+              </button>
+              <button class="post-btn" onclick="toggleComments('${post.id}')">💬 Comentar</button>
+              <button class="post-btn">↗️ Compartir</button>
+            </div>
+            <div class="comments-section" id="comments-${post.id}">
+              <div id="comments-list-${post.id}">${commentsHTML}</div>
+              <div class="comment-input-row">
+                <div class="comment-avatar">${(currentProfile?.full_name || currentUser.email).charAt(0).toUpperCase()}</div>
+                <input class="comment-input" id="comment-input-${post.id}" placeholder="Escribe un comentario..." />
+                <button class="comment-submit" onclick="submitComment('${post.id}', '${post.user_id}')">Enviar</button>
+              </div>
+            </div>
+          </div>`
+      }).join('')
     }
-  }
 
-  function toggleFollow(btn) {
-    const following = btn.classList.contains('following');
-    if (following) {
-      btn.classList.remove('following');
-      btn.textContent = 'Seguir';
-      showToast('Dejaste de seguir.');
-    } else {
-      btn.classList.add('following');
-      btn.textContent = 'Siguiendo';
-      showToast('✅ ¡Ahora los sigues!');
+    // ─── LIKES ────────────────────────────────────────────────────
+    async function toggleLike(postId, postOwnerId) {
+      const { data: existing } = await _supabase
+        .from('likes').select('*').eq('user_id', currentUser.id).eq('post_id', postId).single()
+
+      if (existing) {
+        await _supabase.from('likes').delete().eq('user_id', currentUser.id).eq('post_id', postId)
+        document.getElementById(`like-btn-${postId}`).classList.remove('liked')
+      } else {
+        const { error: likeError } = await _supabase.from('likes').insert({ user_id: currentUser.id, post_id: postId })
+        if (likeError) { alert('Error al dar Me gusta'); return; }
+        document.getElementById(`like-btn-${postId}`).classList.add('liked')
+        if (postOwnerId && postOwnerId !== currentUser.id) {
+          await createNotification('like', postOwnerId, postId)
+        }
+      }
+
+      const { data: likes } = await _supabase.from('likes').select('*').eq('post_id', postId)
+      document.getElementById(`like-count-${postId}`).textContent = `${likes.length} Me gusta`
     }
-  }
 
-  function openPost() {
-    showToast('📄 Abriendo post…');
-  }
+    function toggleComments(postId) {
+      document.getElementById(`comments-${postId}`).classList.toggle('open')
+    }
 
-  let toastTimer;
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-  }
-</script>
+    // ─── COMENTARIOS ──────────────────────────────────────────────
+    async function submitComment(postId, postOwnerId) {
+      const input = document.getElementById(`comment-input-${postId}`)
+      const content = input.value.trim()
+      if (!content) return
+
+      const { error: commentError } = await _supabase.from('comments').insert({ user_id: currentUser.id, post_id: postId, content })
+if (commentError) { alert('Error al enviar comentario'); return; }
+input.value = ''
+
+      const name = currentProfile?.full_name || 'Usuario'
+      const initial = name.charAt(0).toUpperCase()
+      const commentHTML = `
+        <div class="comment">
+          <div class="comment-avatar">${initial}</div>
+          <div class="comment-bubble">
+            <div class="comment-author">${name}</div>
+            <div class="comment-text">${content}</div>
+          </div>
+        </div>`
+      document.getElementById(`comments-list-${postId}`).insertAdjacentHTML('beforeend', commentHTML)
+
+      if (postOwnerId && postOwnerId !== currentUser.id) {
+        await createNotification('comment', postOwnerId, postId)
+      }
+    }
+
+    // ─── NOTIFICACIONES ───────────────────────────────────────────
+    async function createNotification(type, toUserId, postId) {
+      await _supabase.from('notifications').insert({
+        user_id: toUserId,
+        from_user_id: currentUser.id,
+        type: type,
+        post_id: postId,
+        read: false
+      })
+    }
+
+    async function loadNotifications() {
+      const { data: notifs } = await _supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(30)
+
+      if (!notifs || notifs.length === 0) { updateBadge(0); return }
+
+      const fromIds = [...new Set(notifs.map(n => n.from_user_id).filter(Boolean))]
+      const { data: fromProfiles } = await _supabase.from('profiles').select('id, full_name').in('id', fromIds)
+      const fromMap = {}
+      fromProfiles?.forEach(p => fromMap[p.id] = p)
+
+      const unread = notifs.filter(n => !n.read).length
+      updateBadge(unread)
+
+      const list = document.getElementById('notif-list')
+
+      list.innerHTML = notifs.map(n => {
+        const from = fromMap[n.from_user_id]
+        const fromName = from?.full_name || 'Alguien'
+        let emoji = '🔔', action = 'interactuó contigo'
+        if (n.type === 'like') { emoji = '❤️'; action = 'le dio Me gusta a tu publicación' }
+        else if (n.type === 'comment') { emoji = '💬'; action = 'comentó tu publicación' }
+        else if (n.type === 'friend_request') { emoji = '👥'; action = 'te envió una solicitud de amistad' }
+        const time = timeAgo(n.created_at)
+
+        return `
+          <div class="notif-item ${n.read ? '' : 'unread'}" id="notif-${n.id}" onclick="markRead('${n.id}')">
+            <div class="notif-icon ${n.type}">${emoji}</div>
+            <div class="notif-text">
+              <p><strong>${fromName}</strong> ${action}</p>
+              <div class="notif-time">${time}</div>
+            </div>
+            ${!n.read ? '<div class="notif-dot"></div>' : ''}
+          </div>`
+      }).join('')
+    }
+
+    function updateBadge(count) {
+      const badge = document.getElementById('notif-badge')
+      if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : count
+        badge.classList.add('visible')
+      } else {
+        badge.classList.remove('visible')
+      }
+    }
+
+    async function markRead(notifId) {
+      await _supabase.from('notifications').update({ read: true }).eq('id', notifId)
+      const el = document.getElementById(`notif-${notifId}`)
+      if (el) {
+        el.classList.remove('unread')
+        const dot = el.querySelector('.notif-dot')
+        if (dot) dot.remove()
+      }
+      const unreadEls = document.querySelectorAll('.notif-item.unread').length
+      updateBadge(unreadEls)
+    }
+
+    async function markAllRead() {
+      await _supabase.from('notifications').update({ read: true }).eq('user_id', currentUser.id).eq('read', false)
+      document.querySelectorAll('.notif-item').forEach(el => {
+        el.classList.remove('unread')
+        const dot = el.querySelector('.notif-dot')
+        if (dot) dot.remove()
+      })
+      updateBadge(0)
+    }
+
+    function toggleNotifPanel() {
+      const panel = document.getElementById('notif-panel')
+      panel.classList.toggle('open')
+      if (panel.classList.contains('open')) loadNotifications()
+    }
+
+    function timeAgo(dateStr) {
+      const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+      if (diff < 60) return 'Hace un momento'
+      if (diff < 3600) return `Hace ${Math.floor(diff / 60)} min`
+      if (diff < 86400) return `Hace ${Math.floor(diff / 3600)} h`
+      return `Hace ${Math.floor(diff / 86400)} días`
+    }
+
+    // ─── MODAL POST ───────────────────────────────────────────────
+    function openModal() { document.getElementById('modal-overlay').classList.add('active') }
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active')
+      document.getElementById('post-text').value = ''
+    }
+
+    async function submitPost() {
+      const content = document.getElementById('post-text').value.trim()
+      if (!content) return
+      const { error } = await _supabase.from('posts').insert({ user_id: currentUser.id, content })
+      if (error) { alert('Error: ' + error.message); return }
+      closeModal()
+      loadPosts()
+    }
+
+    async function logout() {
+      await _supabase.auth.signOut()
+      window.location.href = 'index.html'
+    }
+
+    init()
+  </script>
 </body>
 </html>
