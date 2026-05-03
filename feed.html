@@ -214,10 +214,18 @@
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
       <textarea id="post-text" placeholder="¿Qué estás pensando?"></textarea>
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-        <button class="btn-post" onclick="submitPost()">Publicar</button>
-      </div>
+<div style="margin-top:10px;">
+  <label style="font-size:0.85rem;color:#555;font-weight:600;">📷 Agregar foto (URL):</label>
+  <input type="url" id="post-image-url" placeholder="https://..." style="width:100%;margin-top:6px;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:0.9rem;outline:none;" />
+</div>
+<div style="margin-top:10px;">
+  <label style="font-size:0.85rem;color:#555;font-weight:600;">📍 Ubicación:</label>
+  <input type="text" id="post-location" placeholder="Ej: Calle 72 #10-45, Barranquilla" style="width:100%;margin-top:6px;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:0.9rem;outline:none;" />
+</div>
+<div class="modal-footer">
+  <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+  <button class="btn-post" onclick="submitPost()">Publicar</button>
+</div>
     </div>
   </div>
 
@@ -321,6 +329,8 @@
               </div>
             </div>
             <div class="post-content">${post.content}</div>
+${post.location ? `<div style="font-size:0.85rem;color:#555;margin-bottom:8px;">📍 ${post.location}</div>` : ''}
+${post.image_url ? `<img src="${post.image_url}" alt="imagen" style="width:100%;border-radius:10px;margin-bottom:10px;max-height:400px;object-fit:cover;" onerror="this.style.display='none'" />` : ''}
             <div class="post-stats">
               <span id="like-count-${post.id}">${postLikes.length} Me gusta</span>
               <span>${postComments.length} comentarios</span>
@@ -497,14 +507,23 @@ input.value = ''
     // ─── MODAL POST ───────────────────────────────────────────────
     function openModal() { document.getElementById('modal-overlay').classList.add('active') }
     function closeModal() {
-      document.getElementById('modal-overlay').classList.remove('active')
-      document.getElementById('post-text').value = ''
-    }
+  document.getElementById('modal-overlay').classList.remove('active')
+  document.getElementById('post-text').value = ''
+  document.getElementById('post-location').value = ''  // ← agrega esta
+  document.getElementById('post-image-url').value = ''
+}
 
     async function submitPost() {
       const content = document.getElementById('post-text').value.trim()
       if (!content) return
-      const { error } = await _supabase.from('posts').insert({ user_id: currentUser.id, content })
+      const imageUrl = document.getElementById('post-image-url').value.trim()
+const location = document.getElementById('post-location').value.trim()
+const { error } = await _supabase.from('posts').insert({ 
+  user_id: currentUser.id, 
+  content,
+  image_url: imageUrl || null,
+  location: location || null
+})
       if (error) { alert('Error: ' + error.message); return }
       closeModal()
       loadPosts()
