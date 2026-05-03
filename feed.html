@@ -215,8 +215,9 @@
       </div>
       <textarea id="post-text" placeholder="¿Qué estás pensando?"></textarea>
 <div style="margin-top:10px;">
-  <label style="font-size:0.85rem;color:#555;font-weight:600;">📷 Agregar foto (URL):</label>
-  <input type="url" id="post-image-url" placeholder="https://..." style="width:100%;margin-top:6px;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:0.9rem;outline:none;" />
+  <label style="font-size:0.85rem;color:#555;font-weight:600;">📷 Agregar foto:</label>
+  <input type="file" id="post-image-file" accept="image/*" style="width:100%;margin-top:6px;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:0.9rem;outline:none;" />
+  <img id="post-image-preview" src="" alt="" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:200px;object-fit:cover;" />
 </div>
 <div style="margin-top:10px;">
   <label style="font-size:0.85rem;color:#555;font-weight:600;">📍 Ubicación:</label>
@@ -505,19 +506,43 @@ input.value = ''
     }
 
     // ─── MODAL POST ───────────────────────────────────────────────
-    function openModal() { document.getElementById('modal-overlay').classList.add('active') }
+    document.getElementById('post-image-file').addEventListener('change', function() {
+  const file = this.files[0]
+  const preview = document.getElementById('post-image-preview')
+  if (file) {
+    preview.src = URL.createObjectURL(file)
+    preview.style.display = 'block'
+  } else {
+    preview.style.display = 'none'
+  }
+})
     function closeModal() {
   document.getElementById('modal-overlay').classList.remove('active')
   document.getElementById('post-text').value = ''
   document.getElementById('post-location').value = ''  // ← agrega esta
-  document.getElementById('post-image-url').value = ''
+  document.getElementById('post-image-file').value = ''
+document.getElementById('post-image-preview').style.display = 'none'
+document.getElementById('post-image-preview').src = ''
 }
 
     async function submitPost() {
       const content = document.getElementById('post-text').value.trim()
       if (!content) return
-      const imageUrl = document.getElementById('post-image-url').value.trim()
-const location = document.getElementById('post-location').value.trim()
+      const location = document.getElementById('post-location').value.trim()
+let imageUrl = null
+
+const file = document.getElementById('post-image-file').files[0]
+if (file) {
+  const ext = file.name.split('.').pop()
+  const fileName = `${currentUser.id}_${Date.now()}.${ext}`
+  const { error: uploadError } = await _supabase.storage
+    .from('post-images')
+    .upload(fileName, file)
+  if (uploadError) { alert('Error subiendo imagen: ' + uploadError.message); return }
+  const { data: urlData } = _supabase.storage.from('post-images').getPublicUrl(fileName)
+  imageUrl = urlData.publicUrl
+}
+
 const { error } = await _supabase.from('posts').insert({ 
   user_id: currentUser.id, 
   content,
