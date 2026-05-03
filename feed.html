@@ -498,8 +498,8 @@ input.value = ''
     }
 
     function timeAgo(dateStr) {
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
-  console.log('diff en segundos:', diff, 'para:', dateStr)
+  const dateUTC = dateStr.endsWith('Z') || dateStr.includes('+') ? dateStr : dateStr + 'Z'
+const diff = (Date.now() - new Date(dateUTC).getTime()) / 1000
   const mins = Math.floor(diff / 60)
   const hours = Math.floor(diff / 3600)
   const days = Math.floor(diff / 86400)
