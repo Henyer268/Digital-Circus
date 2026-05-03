@@ -301,7 +301,10 @@
         const profile = profileMap[post.user_id]
         const name = profile?.full_name || 'Usuario'
         const initial = name.charAt(0).toUpperCase()
-        const time = new Date(post.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+        const time = new Date(post.created_at).toLocaleString('es-CO', { 
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+})
         const postLikes = allLikes?.filter(l => l.post_id === post.id) || []
         const postComments = allComments?.filter(c => c.post_id === post.id) || []
         const userLiked = postLikes.some(l => l.user_id === currentUser.id)
